@@ -22,7 +22,7 @@
 3. Run the development server: `npm run dev`
 4. The frontend should now be running on: http://localhost:3000
 
-### Database Setup (PostgreSQL):
-- The project uses PostgreSQL as its database.
+### Database Setup (MySQL):
+- The project uses MySQL as its database.
 - The backend code is already integrated with the database using environment variables in `resources/application.properties`.
-- You can run the database locally and populate it using `resources/e-commerce.sql`. (eventually we can run in docker??)
+- You can run the database locally and populate it using this command:` mysql -u root -p ecommerce < backend/src/main/resources/e-commerce.sql` .

@@ -1,26 +1,22 @@
-# docker-compose.yml
 version: "3.8"
 
 services:
   db:
-    image: postgres:16
-    container_name: postgres-db
+    image: mysql:8
+    container_name: mysql-db
     environment:
-      POSTGRES_DB: ecommerce
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      MYSQL_ROOT_PASSWORD: EECS4413  # only this for root
+      MYSQL_DATABASE: ecommerce         
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
 
   backend:
     build: ./backend
     container_name: spring-backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ecommerce
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/ecommerce?useSSL=false&serverTimezone=America/Toronto
     ports:
       - "8080:8080"
     depends_on:
@@ -37,4 +33,4 @@ services:
       - backend
 
 volumes:
-  pgdata:
+  mysql-data:
