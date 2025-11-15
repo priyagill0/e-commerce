@@ -10,6 +10,12 @@
 - Maven (for building the Spring Boot backend)
 - PostgreSQL and PGAdmin (optional) for database.
 
+### Install Maven:
+Execute in terminal:
+- curl -s "https://get.sdkman.io/" | bash
+- source "$HOME/.sdkman/bin/sdkman-init.sh"
+- Sdk install maven 
+
 ### Backend Setup:
 1. Navigate to the backend directory: `cd backend`
 2. Build the project: `mvn clean install -DskipTests`
