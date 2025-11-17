@@ -41,11 +41,11 @@ public class DataSeeder implements CommandLineRunner {
 
 
 
-        ProductVariant tonerVariant1 = new ProductVariant(toner.getProductId(), "240 mL", 12.99, 30, 0);
+        ProductVariant tonerVariant1 = new ProductVariant(toner, "240 mL", 12.99, 30, 0);
         tonerVariant1.setVariantId("b1c2d3e4-f5a6-7890-b1c2-d3e4f5a67890");
         variantRepository.save(tonerVariant1);
 
-        ProductVariant tonerVariant2 = new ProductVariant(toner.getProductId(), "100 mL (Travel Size)", 6.99, 15, 1);
+        ProductVariant tonerVariant2 = new ProductVariant(toner, "100 mL (Travel Size)", 6.99, 15, 1);
         tonerVariant2.setVariantId("c2d3e4f5-a678-90b1-c2d3-e4f5a67890b1");
         variantRepository.save(tonerVariant2);
 
@@ -64,11 +64,11 @@ public class DataSeeder implements CommandLineRunner {
         productRepository.save(faceWash);
 
         // Variants
-        ProductVariant faceWashVariant1 = new ProductVariant(faceWash.getProductId(), "200 mL", 10.99, 25, 0);
+        ProductVariant faceWashVariant1 = new ProductVariant(faceWash, "200 mL", 10.99, 25, 0);
         faceWashVariant1.setVariantId("f1a2b3c4-d5e6-7890-f1a2-b3c4d5e67890");
         variantRepository.save(faceWashVariant1);
 
-        ProductVariant faceWashVariant2 = new ProductVariant(faceWash.getProductId(), "100 mL Travel Size", 6.49, 10, 1);
+        ProductVariant faceWashVariant2 = new ProductVariant(faceWash, "100 mL Travel Size", 6.49, 10, 1);
         faceWashVariant2.setVariantId("a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890");
         variantRepository.save(faceWashVariant2);
         

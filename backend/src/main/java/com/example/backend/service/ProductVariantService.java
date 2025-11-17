@@ -22,7 +22,7 @@ public class ProductVariantService {
 
     // get all product variants for the specified product id
     public List<ProductVariant> getProductVariantsByProductId(String productId) {
-        return repo.findByProductId(productId);
+        return repo.findByProductProductId(productId);
     }
 
     public ProductVariant addProductVariant(ProductVariant productVariant) {

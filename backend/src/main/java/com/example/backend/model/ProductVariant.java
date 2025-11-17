@@ -5,6 +5,8 @@ import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,12 +17,12 @@ public class ProductVariant {
     @Column(name = "variant_id", nullable = false, unique = true)
     private String variantId = UUID.randomUUID().toString();
 
-    // @ManyToOne
-    // @JoinColumn(name = "product_id", nullable = false) // foreign key, many to one
-    // private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // foreign key, many to one
+    private Product product;
 
-    @Column(name = "product_id", nullable = false)
-    private String productId;
+    // @Column(name = "product_id", nullable = false)
+    // private String productId;
 
     private String size;
     private double price;
@@ -31,8 +33,8 @@ public class ProductVariant {
 
     public ProductVariant() {}
 
-    public ProductVariant(String productId, String size, double price, int quantity, int sortOrder) {
-        this.productId = productId;
+    public ProductVariant(Product product, String size, double price, int quantity, int sortOrder) {
+        this.product = product;
         this.size = size;
         this.price = price;
         this.quantity = quantity;
@@ -46,12 +48,12 @@ public class ProductVariant {
         this.variantId = variantId;
     }
 
-    public String getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProduct(String productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getSize() {

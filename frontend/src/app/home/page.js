@@ -35,7 +35,7 @@ export default function HomePage() {
         {products.map((product) => {
           // filter variants for this product
           const variantsForProduct = productVariants.filter(
-            (v) => v.productId === product.productId
+            (v) => v.product.productId === product.productId
           );
         
           return (
