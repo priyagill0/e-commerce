@@ -10,5 +10,6 @@ import com.example.backend.model.ProductVariant;
 public interface ProductVariantRepository  extends JpaRepository<ProductVariant, String> {
     List<ProductVariant> findByProduct(Product product);
     List<ProductVariant> findByProductProductId(String productId);
+    void deleteByProductProductId(String productId);
 
 }

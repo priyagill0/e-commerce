@@ -25,6 +25,7 @@ public class ProductVariantController {
         this.service = service;
     }
 
+    // get all product variants -> helpful for catalog
     @GetMapping
     public List<ProductVariant> getAll() {
         return service.getAllProductVariants();
@@ -35,7 +36,6 @@ public class ProductVariantController {
     public List<ProductVariant> getByProductId(@PathVariable String productId) {
         return service.getProductVariantsByProductId(productId);
     }
-
 
     @PostMapping
     public ProductVariant add(@RequestBody ProductVariant productVariant) {

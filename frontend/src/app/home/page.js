@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function HomePage() {
   const [products, setProducts] = useState([]);
   const [productVariants, setProductVariants] = useState([]);
+  const [productImages, setProductImages] = useState([]);
 
 
   useEffect(() => {
@@ -23,6 +24,16 @@ export default function HomePage() {
       .then((data) => {
         console.log("Product Variants:", data);
         setProductVariants(data);
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/product_image")
+    .then((res) => res.json())
+      .then((data) => {-
+        console.log("Product Image:", data);
+        setProductImages(data);
       })
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
@@ -54,6 +65,25 @@ export default function HomePage() {
                 ))}
                 {variantsForProduct.length === 0 && <li>No variants found</li>}
               </ul>
+
+
+              {/* Images */}
+              <div className="flex gap-2 mt-2">
+                {productImages
+                  .filter((img) => img.product.productId === product.productId)
+                  .map((img) => (
+                    <img
+                      key={img.imageId}
+                      src={img.imageUrl}
+                      alt={product.name}
+                      style={{ width: "120px", borderRadius: "8px" }}
+                    />
+                  ))}
+
+                {productImages.filter((img) => img.product.productId === product.productId).length === 0 && (
+                  <p>No images</p>
+                )}
+              </div>
             </div>
           );
         })}

@@ -22,13 +22,29 @@ public class ProductController {
         this.service = service;
     }
 
+    // get all products
     @GetMapping
     public List<Product> getAll() {
         return service.getAllProducts();
     }
 
+    // get product by id    
+    @GetMapping("/{productId}")
+    public Product getById(@RequestBody String productId) {
+        return service.getProductById(productId);
+    }
+
+
     @PostMapping
     public Product add(@RequestBody Product product) {
         return service.addProduct(product);
     }
+
+    // delete product (uncomment if needed, it deletes all its variants and images too !! )
+    // @DeleteMapping("/{productId}")
+    // public Product delete(@PathVariable String productId) {
+    //     return service.deleteProductById(productId);
+    // }
+
+
 }
