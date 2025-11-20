@@ -1,10 +1,13 @@
 package com.example.backend.service;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.example.backend.model.Category;
 import com.example.backend.model.Product;
+import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.ProductImageRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.ProductVariantRepository;
@@ -16,11 +19,13 @@ public class ProductService {
     // private final ProductImageService imageService;
     private final ProductVariantRepository variantRepo;
     private final ProductImageRepository productImagesRepo;
+    private final CategoryRepository categoryRepo;
 
-    public ProductService(ProductRepository repo, ProductVariantRepository variantRepo, ProductImageRepository productImagesRepo) {
+    public ProductService(ProductRepository repo, ProductVariantRepository variantRepo, ProductImageRepository productImagesRepo, CategoryRepository categoryRepo) {
         this.repo = repo;
         this.variantRepo = variantRepo;
         this.productImagesRepo = productImagesRepo;
+        this.categoryRepo = categoryRepo;
     }
 
     public List<Product> getAllProducts() {
@@ -50,6 +55,33 @@ public class ProductService {
         // delete the product
         repo.delete(product);
 
+        return product;
+    }
+
+    public Product addCategoryToProduct(String productId, String categoryId) {
+        Product product = repo.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new RuntimeException("Category not found"));
+
+        List<Category> categories = product.getCategories();
+        if (categories == null) {
+            categories = new ArrayList<>();
+        }
+        if (!categories.contains(category)) {
+            categories.add(category);
+            product.setCategories(categories);
+            repo.save(product);
+        }
+        return product;
+    }
+
+    public Product deleteCategoryFromProduct(String productId, String categoryId) {
+        Product product = repo.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        List<Category> categories = product.getCategories();
+        if (categories != null) {
+            categories.removeIf(cc -> cc.getCategoryId().equals(categoryId));
+            product.setCategories(categories);
+            repo.save(product);
+        }
         return product;
     }
 }
