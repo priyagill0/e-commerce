@@ -33,15 +33,15 @@ public class Order {
     @Column(name = "placed_at", updatable = false)
     private LocalDateTime placedAt = LocalDateTime.now(); // set only once when created
 
-    @Column(name = "updated_at", updatable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false) // foreign key, many to one
+    @JoinColumn(name = "shipping_address_id", nullable = false)
     private Address shippingAddress;
     
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false) // foreign key, many to one
+    @JoinColumn(name = "billing_address_id", nullable = false)
     private Address billingAddress;
 
     public Order() {}  

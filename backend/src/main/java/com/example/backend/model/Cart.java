@@ -7,7 +7,6 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,9 +16,8 @@ import jakarta.persistence.OneToMany;
 public class Cart {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID cartId;
+    @Column(name = "cart_id", nullable = false, unique = true)
+    private String cartId = UUID.randomUUID().toString();
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -31,11 +29,11 @@ public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
     // GETTERS + SETTERS
-    public UUID getCartId() {
+    public String getCartId() {
         return cartId;
     }
 
-    public void setCartId(UUID id) {
+    public void setCartId(String id) {
         this.cartId = id;
     }
 

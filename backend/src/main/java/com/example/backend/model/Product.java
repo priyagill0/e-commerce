@@ -1,15 +1,18 @@
 package com.example.backend.model;
 
 import java.time.LocalDateTime;
-import static java.util.UUID.randomUUID;
-
+import java.util.ArrayList;
 import java.util.List;
+import static java.util.UUID.randomUUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,7 +38,15 @@ public class Product {
     @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    private List<Category> categories;
+    // Many-to-Many relationship with Category -> join table: product_category
+    @ManyToMany
+    @JoinTable(
+        name = "product_category",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id") 
+    )
+    
+    private List<Category> categories = new ArrayList<>();
 
     public Product() {}  
 
