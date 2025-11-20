@@ -22,13 +22,13 @@ public class ProductController {
         this.service = service;
     }
 
-    // get all products
+    // Get all products
     @GetMapping
     public List<Product> getAll() {
         return service.getAllProducts();
     }
 
-    // get product by id    
+    // Get product by id    
     @GetMapping("/{productId}")
     public Product getById(@RequestBody String productId) {
         return service.getProductById(productId);
