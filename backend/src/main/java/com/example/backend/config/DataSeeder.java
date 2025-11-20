@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.example.backend.model.Category;
 import com.example.backend.model.Product;
 import com.example.backend.model.ProductImage;
 import com.example.backend.model.ProductType;
 import com.example.backend.model.ProductVariant;
+import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.ProductImageRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.ProductVariantRepository;
@@ -15,6 +17,7 @@ import com.example.backend.repository.ProductVariantRepository;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
+    // Repositories
     @Autowired
     private ProductRepository productRepository;
 
@@ -24,6 +27,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private ProductImageRepository imageRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -31,6 +37,15 @@ public class DataSeeder implements CommandLineRunner {
         if (productRepository.count() > 0) {
             return;
         }
+
+        //Creating Categories:
+
+        Category exfoliating = new Category("Exfoliating");
+        Category acneProne= new Category("Acne Prone Skin");
+
+        // Save categories
+        categoryRepository.save(exfoliating);
+        categoryRepository.save(acneProne);
 
         // ============================================================
         // PRODUCT 1: Exfoliating Toner
@@ -42,6 +57,8 @@ public class DataSeeder implements CommandLineRunner {
         exfoliatingToner.setDescription("A gentle exfoliating toner (7% Glycolic Acid) that removes dead skin cells and promotes a radiant complexion.");
         exfoliatingToner.setProductType(ProductType.TONER);
         exfoliatingToner.setBrand("The Ordinary");
+        exfoliatingToner.getCategories().add(exfoliating); //testing many-to-many product-category relationship
+        exfoliatingToner.getCategories().add(acneProne); 
         productRepository.save(exfoliatingToner); // UUID auto-generated
 
         // Variants
@@ -80,6 +97,7 @@ public class DataSeeder implements CommandLineRunner {
         foamingFaceWash.setDescription("A foaming face wash that is suitable for normal to oily skin types, effectively removing dirt and excess oil.");
         foamingFaceWash.setProductType(ProductType.FACE_WASH);
         foamingFaceWash.setBrand("CeraVe");
+        foamingFaceWash.getCategories().add(acneProne);
         productRepository.save(foamingFaceWash);
 
         // Variants
@@ -167,5 +185,26 @@ public class DataSeeder implements CommandLineRunner {
         watermelonGlowMaskImage2.setImageUrl("/assets/products/"+ watermelonGlowMask.getProductId()+ "/e2f1a3b4.jpg");
         imageRepository.save(watermelonGlowMaskImage2); 
 
+
+
+        // ============================================================
+        // PRODUCT 5:  Rose Quartz Gua Sha
+        // ============================================================
+        Product guaSha = new Product();
+        guaSha.setProductId("f3e4d5c6-b7a8-9012-f3e4-d5c6b7a89012");
+        guaSha.setName("Rose Quartz Gua Sha");
+        guaSha.setDescription("A facial gua sha made from rose quartz stone to massage and visibly sculpt your face and neck.");
+        guaSha.setProductType(ProductType.TOOLS);
+        guaSha.setBrand("Sephora Collection");
+        productRepository.save(guaSha);
+        // Variants (one size)
+        ProductVariant guaShaVariant = new ProductVariant(guaSha, "One Size", 22.00, 30, 0);
+        guaShaVariant.setVariantId("c3d4e5f6-a7b8-9012-c3d4-e5f6a7b89012");
+        variantRepository.save(guaShaVariant);
+        // images
+        ProductImage guaShaImage1 = new ProductImage(guaSha, guaShaVariant);
+        guaShaImage1.setImageId("5d6e7f8a");
+        guaShaImage1.setImageUrl("/assets/products/"+ guaSha.getProductId()+ "/5d6e7f8a.jpg");
+        imageRepository.save(guaShaImage1);
     }
 }

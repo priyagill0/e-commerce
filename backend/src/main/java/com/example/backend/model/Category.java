@@ -1,7 +1,9 @@
 package com.example.backend.model;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +19,9 @@ public class Category {
     @Column(name = "category_id", nullable = false, unique = true)
     private String categoryId = UUID.randomUUID().toString();
 
-    @ManyToMany
+    // inverse side of the product-category relationship, join table created in Product.java
+    @ManyToMany(mappedBy = "categories")
+    @JsonIgnore // JSON will NOT include products when returning Category. (prevents infinite recursion)
     private List<Product> products;
 
     private String name;
