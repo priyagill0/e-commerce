@@ -1,29 +1,140 @@
 package com.example.backend.service;
 
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.model.Cart;
+import com.example.backend.model.CartItem;
+import com.example.backend.model.ProductVariant;
+import com.example.backend.repository.CartItemRepository;
 import com.example.backend.repository.CartRepository;
+import com.example.backend.repository.ProductVariantRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CartService {
 
-    private final CartRepository repo;
+    private final CartRepository cartRepo;
+    private final ProductVariantRepository variantRepo;
+    private final CartItemRepository cartItemRepo;
 
-    public CartService(CartRepository repo) {
-        this.repo = repo;
+    public CartService(CartRepository cartRepo, ProductVariantRepository variantRepo, CartItemRepository cartItemRepo) {
+        this.cartRepo = cartRepo;
+        this.variantRepo = variantRepo;
+        this.cartItemRepo = cartItemRepo; 
     }
 
-    public Cart getCart(UUID id) {
-        return repo.findById(id).orElse(null);
+    public Cart getCart(String id) {
+        return cartRepo.findById(id).orElse(null);
     }
 
     public Cart getCartBySession(String sessionId) {
-        return repo.findBySessionId(sessionId);
+        return cartRepo.findBySessionId(sessionId);
     }
 
     public Cart save(Cart cart) {
-        return repo.save(cart);
+        return cartRepo.save(cart);
+    }
+
+    @Transactional
+    public Cart addItemToCart(String sessionId, String variantId, int quantity) {
+
+        Cart cart = cartRepo.findBySessionId(sessionId);
+
+        // Create cart if it does not exist already
+        if (cart == null) {
+            cart = new Cart();
+            cart.setSessionId(sessionId);
+            cartRepo.save(cart);
+        }
+
+        ProductVariant variant = variantRepo.findById(variantId)
+            .orElseThrow(() -> new RuntimeException("Product variant not found."));
+
+        // Check if the item already exists in the cart
+        CartItem existingItem = cart.getItems().stream()
+                .filter(i -> i.getProductVariant().getVariantId().equals(variantId))
+                .findFirst()
+                .orElse(null);
+        
+        // If item already exists in the cart, update quantity
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            cartItemRepo.save(existingItem);
+        } 
+
+        // Otherwise, create a new cart item and add it to the cart.
+        else {
+            CartItem item = new CartItem();
+            item.setCart(cart);
+            item.setProductVariant(variant);
+            item.setQuantity(quantity);
+    
+            cart.getItems().add(item);
+            cartItemRepo.save(item);
+        }
+
+        calculateTotal(cart);
+
+        return cartRepo.save(cart);
+    }
+
+    public Cart removeItem(String sessionId, Long itemId) {
+        Cart cart = cartRepo.findBySessionId(sessionId);
+        if (cart == null) {
+            throw new RuntimeException("Cart not found for the given session: " + sessionId);
+        }
+
+        CartItem itemToRemove = cart.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Item not found in this cart"));
+                 
+            // Remove item and all its quantities from cart and delete it from repository
+            cart.getItems().remove(itemToRemove);
+            cartItemRepo.delete(itemToRemove);
+ 
+            // Recalculate totals
+            calculateTotal(cart);
+
+            return cartRepo.save(cart); 
+    } 
+
+    public Cart updateItemQuantity(String sessionId, Long itemId, int quantity) {
+        Cart cart = cartRepo.findBySessionId(sessionId);
+        if (cart == null) {
+            throw new RuntimeException("Cart not found for the given session: " + sessionId);
+        }
+
+        // Find the item in the cart
+        CartItem itemToUpdate = cart.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Item not found in this cart"));
+
+        // if the item exists, update the quantity and save the cart item
+        itemToUpdate.setQuantity(quantity);
+        cartItemRepo.save(itemToUpdate);
+        // Recalculate totals
+        calculateTotal(cart);
+
+        return cartRepo.save(cart);
+    }
+
+
+    public double calculateTotal(Cart cart) {
+        double subtotal = cart.getItems().stream()
+                .mapToDouble(item -> item.getProductVariant().getPrice() * item.getQuantity())
+                .sum();
+        double tax = subtotal * 0.13; // Assuming a fixed tax rate of 13% for Ontario
+        double shipping = subtotal > 100 ? 0 : 8; // Free shipping for orders over $100. Otherwise, $8 shipping fee.
+        double total = subtotal + tax + shipping;
+
+        cart.setSubtotal(subtotal);
+        cart.setTax(tax);
+        cart.setShipping(shipping);
+        cart.setTotal(total);
+
+        return total;
     }
 }
