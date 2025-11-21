@@ -28,6 +28,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> items = new ArrayList<>();
 
+    private int totalCartItems; // total number of items in cart (all quantities summed)
+
     private double subtotal;  
     private double tax;  
     private double shipping;
@@ -96,5 +98,13 @@ public class Cart {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public int getTotalCartItems() {
+        return totalCartItems;
+    }
+    
+    public void setTotalCartItems(int totalCartItems) {
+        this.totalCartItems = totalCartItems;
     }
 }

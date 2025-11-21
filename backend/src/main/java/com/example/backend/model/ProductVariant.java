@@ -36,7 +36,7 @@ public class ProductVariant {
     public ProductVariant(Product product, String size, double price, int quantity, int sortOrder) {
         this.product = product;
         this.size = size;
-        this.price = price;
+        this.price = Math.round(price * 100.0) / 100.0;
         this.quantity = quantity;
         this.sortOrder = sortOrder;
     }
@@ -65,11 +65,11 @@ public class ProductVariant {
     }
 
     public double getPrice() {
-        return price;
+        return Math.round(price * 100.0) / 100.0;
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        this.price = Math.round(price * 100.0) / 100.0;
     }
 
     public int getQuantity() {

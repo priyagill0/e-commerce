@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,20 +18,21 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonIgnore   // prevents infinite recursion
     private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "variant_id")
     private ProductVariant productVariant;
 
-    private int quantity;
+    private int quantityInCart;
 
     public CartItem() {}
     
-    public CartItem(Cart cart, ProductVariant productVariant, int quantity) {
+    public CartItem(Cart cart, ProductVariant productVariant, int quantityInCart) {
         this.cart = cart;
         this.productVariant = productVariant;
-        this.quantity = quantity;
+        this.quantityInCart = quantityInCart;
     }
 
     // getters and setters
@@ -42,6 +45,6 @@ public class CartItem {
     public ProductVariant getProductVariant() { return productVariant; }
     public void setProductVariant(ProductVariant productVariant) { this.productVariant = productVariant; }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public int getQuantityInCart() { return quantityInCart; }
+    public void setQuantityInCart(int quantityInCart) { this.quantityInCart = quantityInCart; }
 }

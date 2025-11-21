@@ -59,7 +59,7 @@ public class CartService {
         
         // If item already exists in the cart, update quantity
         if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            existingItem.setQuantityInCart(existingItem.getQuantityInCart() + quantity);
             cartItemRepo.save(existingItem);
         } 
 
@@ -68,13 +68,18 @@ public class CartService {
             CartItem item = new CartItem();
             item.setCart(cart);
             item.setProductVariant(variant);
-            item.setQuantity(quantity);
+            item.setQuantityInCart(quantity);
     
             cart.getItems().add(item);
             cartItemRepo.save(item);
         }
 
         calculateTotal(cart);
+
+        // Update count for total cart items
+        cart.setTotalCartItems(
+            cart.getItems().stream().mapToInt(CartItem::getQuantityInCart).sum()
+        );
 
         return cartRepo.save(cart);
     }
@@ -97,6 +102,11 @@ public class CartService {
             // Recalculate totals
             calculateTotal(cart);
 
+            // Update count for total cart items
+            cart.setTotalCartItems(
+                cart.getItems().stream().mapToInt(CartItem::getQuantityInCart).sum()
+            );
+
             return cartRepo.save(cart); 
     } 
 
@@ -113,22 +123,35 @@ public class CartService {
                 .orElseThrow(() -> new RuntimeException("Item not found in this cart"));
 
         // if the item exists, update the quantity and save the cart item
-        itemToUpdate.setQuantity(quantity);
+        itemToUpdate.setQuantityInCart(quantity);
         cartItemRepo.save(itemToUpdate);
         // Recalculate totals
         calculateTotal(cart);
 
+        // Update count for total cart items
+        cart.setTotalCartItems(
+            cart.getItems().stream().mapToInt(CartItem::getQuantityInCart).sum()
+        );
         return cartRepo.save(cart);
     }
 
-
     public double calculateTotal(Cart cart) {
+        // Round all values to 2 decimal places
         double subtotal = cart.getItems().stream()
-                .mapToDouble(item -> item.getProductVariant().getPrice() * item.getQuantity())
-                .sum();
-        double tax = subtotal * 0.13; // Assuming a fixed tax rate of 13% for Ontario
-        double shipping = subtotal > 100 ? 0 : 8; // Free shipping for orders over $100. Otherwise, $8 shipping fee.
+        .mapToDouble(item -> item.getProductVariant().getPrice() * item.getQuantityInCart())
+        .sum();
+
+        subtotal = Math.round(subtotal * 100.0) / 100.0;
+
+        double shipping = subtotal > 100 ? 0 : 8;
+        shipping = Math.round(shipping * 100.0) / 100.0;
+
+        // HST is 13% and it is applied on subtotal + shipping
+        double tax = (subtotal+shipping) * 0.13;
+        tax = Math.round(tax * 100.0) / 100.0;
+
         double total = subtotal + tax + shipping;
+        total = Math.round(total * 100.0) / 100.0;
 
         cart.setSubtotal(subtotal);
         cart.setTax(tax);
@@ -136,5 +159,16 @@ public class CartService {
         cart.setTotal(total);
 
         return total;
+    }
+
+    // test sessionId
+    public Cart getCartBySessionId(String sessionId) {
+        return cartRepo.findBySessionId(sessionId);
+    }
+
+    public Cart createCartForSession(String sessionId) {
+        Cart cart = new Cart();
+        cart.setSessionId(sessionId);
+        return cartRepo.save(cart);
     }
 }

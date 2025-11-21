@@ -28,10 +28,12 @@ public class CartController {
 
     // In Spring Boot, HttpSession session can be injected directly into controller methods.
     // This session is tied to the user's session and can be used to track their cart.
-  
-    @GetMapping("/{cartId}")
-    public Cart getCart(@PathVariable String cartId) {
-        return service.getCart(cartId);
+
+    // Get cart by session ID. The session ID is retrieved from the HttpServletRequest.
+    @GetMapping
+    public Cart getCart(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        return service.getCartBySessionId(sessionId);
     }
 
 
