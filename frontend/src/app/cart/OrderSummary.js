@@ -13,6 +13,7 @@ export default function OrderSummary({
   tax = 0,
   shipping = 0,
   total = 0,
+  itemCount = 0,
   onCheckout = () => alert("Checkout not implemented"),
 }) { 
 
@@ -32,20 +33,26 @@ export default function OrderSummary({
     }}
     >
 
-        {/* Title */}
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <Typography
             variant="h5"
             component="h2"
             sx={{
-            mb: 1.5,
             fontWeight: 700,
-            fontSize: "1.5rem",     // bigger
+            fontSize: "1.5rem",
             letterSpacing: "0.5px",
             color: "text.primary",
             }}
         >
             Order Summary
-        </Typography> 
+        </Typography>
+
+        <Typography  variant="h5" component="h2" sx={{ fontWeight: 300, fontSize: "1.3rem", letterSpacing: "0.5px", color: "text.primary",}} >
+            {itemCount} {itemCount === 1 ? "Item" : "Items"}
+        </Typography>
+    </Box>
+
+
 
         <Divider sx={{ my: 2, borderBottomWidth: 2, borderColor: "primary.main" }} />
 

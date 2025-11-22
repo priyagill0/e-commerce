@@ -2,14 +2,11 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import  RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from "@mui/material/CircularProgress";
 import OrderSummary from "./OrderSummary";
 import EmptyCart from "./EmptyCart";
 import CartItem from "./CartItem";
+import Typography from "@mui/material/Typography";
 
 export default function Cart() {
 
@@ -122,10 +119,14 @@ return (
     
     {/*  Cart heading with number of items */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "" }}>
-          <h1 >Your Cart</h1>
-          <h2>
-            {cart.totalCartItems} {cart.totalCartItems === 1 ? "item" : "items"}
-          </h2>
+          {/* <h1 >Your Cart</h1> */}
+          <Typography variant="h5" component="h2" sx={{ fontWeight: 700, fontSize: "1.5rem",letterSpacing: "0.5px",color: "text.primary", }}>
+            Your Cart
+          </Typography> 
+          
+          <Typography variant="h5"  component="h2" sx={{ fontWeight: 300, fontSize: "1.3rem", letterSpacing: "0.5px", color: "text.primary", }}>
+          {cart.totalCartItems} {cart.totalCartItems === 1 ? "Item" : "Items"}
+          </Typography>
       </div>
 
       {cart.items.map((cartItem) => {
@@ -165,6 +166,7 @@ return (
         tax={cart.tax}
         shipping={cart.shipping}
         total={cart.total}
+        itemCount={cart.totalCartItems}
         onCheckout={() => router.push("/checkout")}
       />
 

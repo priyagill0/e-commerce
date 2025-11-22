@@ -59,6 +59,9 @@ public class CartService {
         
         // If item already exists in the cart, update quantity
         if (existingItem != null) {
+            if(existingItem.getQuantityInCart() + quantity > variant.getQuantity()) {
+                throw new RuntimeException("Cannot add more items than available in stock.");
+            }
             existingItem.setQuantityInCart(existingItem.getQuantityInCart() + quantity);
             cartItemRepo.save(existingItem);
         } 
@@ -68,6 +71,9 @@ public class CartService {
             CartItem item = new CartItem();
             item.setCart(cart);
             item.setProductVariant(variant);
+            if(quantity > variant.getQuantity()) {
+                throw new RuntimeException("Cannot add more items than available in stock.");
+            }
             item.setQuantityInCart(quantity);
     
             cart.getItems().add(item);

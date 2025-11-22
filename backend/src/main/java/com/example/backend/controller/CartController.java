@@ -33,8 +33,16 @@ public class CartController {
     @GetMapping
     public Cart getCart(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
-        return service.getCartBySessionId(sessionId);
+        Cart cart = service.getCartBySessionId(sessionId);
+    
+        if (cart == null) {
+            // return empty cart to avoid frontend crash
+            Cart empty = new Cart(); 
+            return empty;
+        }
+        return cart;
     }
+    
 
 
     @PostMapping

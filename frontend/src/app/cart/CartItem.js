@@ -5,7 +5,8 @@ import IconButton from "@mui/material/IconButton";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
- 
+import Typography from "@mui/material/Typography";
+
 export default function CartItem({ cartItem, productImages, updateQuantity, deleteCartItem }) {
   // Find first image for the product
   const relatedImages = productImages.filter(
@@ -95,6 +96,7 @@ export default function CartItem({ cartItem, productImages, updateQuantity, dele
           <IconButton
             onClick={() => updateQuantity(cartItem.id, cartItem.quantityInCart + 1)}
             size="small"
+            disabled={cartItem.quantityInCart >= cartItem.productVariant.quantity} // disable if at max stock
             sx={{
               width: 28,
               height: 28,
@@ -106,6 +108,13 @@ export default function CartItem({ cartItem, productImages, updateQuantity, dele
             <AddIcon fontSize="small" />
           </IconButton>
         </div>
+        
+        {/* Warning message if quantity >= stock */}
+        {cartItem.quantityInCart >= cartItem.productVariant.quantity && (
+          <Typography variant="caption" color="error" sx={{ display: "block", mt: 0.5 }}>
+            No more stock is available for this item.
+          </Typography>
+        )}
 
         {/* Remove item button */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.5rem" }}>
