@@ -14,7 +14,7 @@ public class Address {
     @Id
     @Column(name = "address_id", nullable = false, unique = true)
     private String addressId = UUID.randomUUID().toString();
-
+    
     private String street;
     private String Province;
     private String Country;
