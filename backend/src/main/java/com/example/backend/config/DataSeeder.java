@@ -138,7 +138,7 @@ public class DataSeeder implements CommandLineRunner {
         productRepository.save(pimplePatch);
 
         // Variants
-        ProductVariant pimplePatchSmallPack = new ProductVariant(pimplePatch, "1 pack / 20 dots", 27.00, 30, 0);
+        ProductVariant pimplePatchSmallPack = new ProductVariant(pimplePatch, "1 pack / 20 dots", 27.00, 0, 0); //this is our SOLD OUT product!!
         pimplePatchSmallPack.setVariantId("3c2f4b7e-9a41-4c2d-9c34-2be1447fb3aa");
         variantRepository.save(pimplePatchSmallPack);
 

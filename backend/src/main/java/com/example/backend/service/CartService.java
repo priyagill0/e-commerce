@@ -1,6 +1,8 @@
 package com.example.backend.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.model.Cart;
 import com.example.backend.model.CartItem;
@@ -60,8 +62,10 @@ public class CartService {
         // If item already exists in the cart, update quantity
         if (existingItem != null) {
             if(existingItem.getQuantityInCart() + quantity > variant.getQuantity()) {
-                throw new RuntimeException("Cannot add more items than available in stock.");
-            }
+                throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only " + variant.getQuantity() + " items are available in stock."
+                );                }
             existingItem.setQuantityInCart(existingItem.getQuantityInCart() + quantity);
             cartItemRepo.save(existingItem);
         } 
@@ -72,8 +76,10 @@ public class CartService {
             item.setCart(cart);
             item.setProductVariant(variant);
             if(quantity > variant.getQuantity()) {
-                throw new RuntimeException("Cannot add more items than available in stock.");
-            }
+                throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only " + variant.getQuantity() + " items are available in stock."
+                );                }
             item.setQuantityInCart(quantity);
     
             cart.getItems().add(item);
