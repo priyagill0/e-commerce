@@ -4,11 +4,11 @@ export const imageMap = {
     "dd44ee55-6677-8899-aabb-ccddeeff3344": "db33ab44a.jpg",
     "9988aabb-ccdd-eeff-0011-223344556677": "faf133af.jpg",
     "a4c1f8e2-3c6b-4c1d-b2e7-0f5486c6c1df": "d81ac3f4.jpg",
-    "11aa22bb-33cc-44dd-55ee-66ff77889900": "bb6612ef.jpg",
+    "11aa22bb-33cc-44dd-55ee-66ff77889900": "bb6612ee.jpg",
     "11ff22ee-33dd-44cc-55bb-66778899aacc": "ca9922db.jpg",
     "ffee1122-3344-5566-7788-99aabbccddee": "9812ab56b.jpg",
     "abcd9988-7766-5544-3322-1100ffeeccbb": "aa55bbaa.jpg",
-    "85e49839-6a46-4324-af8a-e0fbe0387a9a": "4921635c.jpg",
+    "85e49839-6a46-4324-af8a-e0fbe0387a9a": "11b2056a.jpg",
     "bbccddaa-1122-3344-5566-77889900aabb": "dd7788cc.jpg",
     "77aa66bb-55cc-44dd-33ee-22119900aabb": "ab7865df.jpg",
     "e1f2a3b4-c5d6-7890-e1f2-a3b4c5d67890": "4a7b3c2d.jpg",
@@ -20,7 +20,7 @@ export const imageMap = {
     "aa8899bb-77cc-55dd-33ee-11ff22334455": "efab0044.jpg",
     "5522aabb-3344-55cc-66dd-77889900eeff": "bf23aa93.jpg",
     "ccee2211-3344-5566-7788-99aabbccdd11": "aa99bb77b.jpg",
-    "aa55ff66-7788-9900-aabb-ccddeeff1122": "bb44cc24.jpg",
+    "aa55ff66-7788-9900-aabb-ccddeeff1122": "bb44cc23.jpg",
     "9977aabb-55cc-33dd-11ee-00ff22334455": "ab9911cc.jpg",
     "d4e5f6a7-b8c9-1234-d5e6-f7a8b9c01234": "8f2bcf50.jpg"
 };
