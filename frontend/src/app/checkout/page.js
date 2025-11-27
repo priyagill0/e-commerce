@@ -10,8 +10,12 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import OrderSummary from "./OrderSummary";
 import CartItem from "./CartItem";
+import BackButton from "./BackButton";
+
+
 
 export default function CheckoutPage() {
+
   const router = useRouter();
 
   const [cart, setCart] = useState(null);
@@ -155,15 +159,36 @@ export default function CheckoutPage() {
   }
 
   return (
+    // <div
+    //   style={{
+    //     display: "flex",
+    //     gap: "3rem",
+    //     margin: "5rem 15rem 3rem",
+    //     flexWrap: "wrap",
+    //   }}
+    // >
+    
     <div
       style={{
+        //position: "relative",
         display: "flex",
         gap: "3rem",
-        margin: "5rem 15rem 3rem",
         flexWrap: "wrap",
+        alignItems: "center",
+        
+        marginTop: "5rem",
+        marginRight: "15rem",
+        marginBottom: "2rem",
+        marginLeft: "15rem",
+        
+        
       }}
     >
+      <BackButton />
+
+    
       <div style={{ flex: 1.5, minWidth: "300px" }}>
+      
         {/* Shipping */}
         <Typography variant="h5" sx={{ fontWeight: 700, marginBottom: 2 }}>
           Shipping Information
