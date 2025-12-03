@@ -2,35 +2,79 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { imageMap } from "@/lib/imageMap";
 import Link from "next/link";
-import FilterBar from "@/app/components/FilterBar";
+import FormControl from '@mui/material/FormControl';
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import { useTheme } from '@mui/material/styles';
+import dynamic from "next/dynamic";
+
+const FilterBar = dynamic(() => import("@/app/components/FilterBar"), {
+    ssr: false,
+  });
+
+// setting the height for select menu items
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 100,
+    },
+  },
+};
+
 
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
     const [variants, setVariants] = useState([]);
+    const [productImages, setProductImages] = useState([]);
+
     const [filters, setFilters] = useState({
         type: "",
         price: "",
         sort: "",
         categories: [],   
+        search: "",
+        // size: {}, // size per productId
     });
+    const theme = useTheme();
+    const [selectedSizes, setSelectedSizes] = useState({});
+
+    function updateSize(productId, size) {
+        setSelectedSizes(prev => ({
+          ...prev,
+          [productId]: size
+        }));
+      }
+
+    function updateFilter(key, value) {
+        const updated = { ...filters, [key]: value };
+        setFilters(updated);
+    } 
 
     // Fetch products + variants once
     useEffect(() => {
         async function fetchData() {
             const pRes = await fetch("http://localhost:8080/api/product", { cache: "no-store" });
             const vRes = await fetch("http://localhost:8080/api/product_variant", { cache: "no-store" });
+            const images = await fetch("http://localhost:8080/api/product_image", { cache: "no-store" });
 
             setProducts(await pRes.json());
             setVariants(await vRes.json());
+            setProductImages(await images.json());
         }
         fetchData();
     }, []);
 
     // Apply filtering logic
     const filteredProducts = products
-        .filter((p) => imageMap[p.productId]) // only valid images
+        .filter((p) =>
+            productImages.some((img) => img.product.productId === p.productId)
+        )        
         .filter((p) => {
             // Product Type filter
             if (filters.type && p.productType !== filters.type) return false;
@@ -72,28 +116,31 @@ export default function CatalogPage() {
             );
         })
         .sort((a, b) => {
-            // Sorting
             if (!filters.sort) return 0;
-
+            // get variants for both products
             const aVariants = variants.filter(v => v.product.productId === a.productId);
             const bVariants = variants.filter(v => v.product.productId === b.productId);
-
-            const aPrice = aVariants[0]?.price ?? 0;
-            const bPrice = bVariants[0]?.price ?? 0;
-
-            // Sort by Name A-Z
+        
+            // get the selected sizes, or fall back to the default size
+            const aSelected = selectedSizes[a.productId] ?? aVariants[0]?.size;
+            const bSelected = selectedSizes[b.productId] ?? bVariants[0]?.size;
+        
+            // find the variant that matches the selected size, and get its price
+            const aPrice = aVariants.find(v => v.size === aSelected)?.price ?? 0;
+            const bPrice = bVariants.find(v => v.size === bSelected)?.price ?? 0;
+        
             if (filters.sort === "az") {
                 return a.name.localeCompare(b.name);
             }
-            // Sort by Price Low to High
+        
             if (filters.sort === "low") {
                 return aPrice - bPrice;
             }
-            // Sort by Price High to Low
+        
             if (filters.sort === "high") {
                 return bPrice - aPrice;
             }
-
+        
             return 0;
         });
 
@@ -102,31 +149,65 @@ export default function CatalogPage() {
             <h1 className="text-3xl font-light mb-6">All Products</h1>
 
             {/* Filters */}
-            <FilterBar onChange={(f) => setFilters(f)} />
+            <FilterBar onChange={(f) => setFilters(f)} />       
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-6">
-                {filteredProducts.map((p) => {
-                    const productVariants = variants.filter(
-                        (v) => v.product.productId === p.productId
-                    );
-                    // const price = productVariants[0]?.price ?? "N/A";
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
+                {filteredProducts.map((p) => { 
+ 
+                    const productVariants = variants
+                    .filter(v => v.product.productId === p.productId)
+                    .sort((a, b) => a.index - b.index);   // sort by index to show travel size first
+                    
+                    const defaultSize = productVariants[0]?.size || "";
+                     
+                    const img = productImages.find(
+                        (img) => img.product.productId === p.productId
+                      ) || productImages[0]; // fallback to first image if needed
 
                     return (
-                        <Link
-                            key={p.productId}
-                            href={`/catalog/${p.productId}`}
-                            className="border p-4 rounded shadow-sm hover:shadow-md transition block"
-                        >
-                            <img
-                                src={`/assets/products/${p.productId}/${imageMap[p.productId]}`}
-                                alt={p.name}
-                                className="w-full h-48 object-cover"
-                            />
+                        <div key={p.productId} className="border p-4 rounded shadow-sm hover:shadow-md transition">
+                            
+                            {/* CLICKABLE PRODUCT CARD */}
+                            <Link
+                                href={`/catalog/${p.productId}`}
+                                className="block"
+                            >
+                                <img
+                                    src={`${img.imageUrl}`}
+                                    alt={p.name}
+                                    className="w-full h-55 object-cover"
+                                />
+                    
+                                <h2 className="mt-3 font-medium">{p.name}</h2>
+                                <p className="text-gray-500">{p.brand}</p>
+                            </Link>
+                         
+                            {/* PRICE  */}
+                            <h3 className="text-gray-700 mt-2 text-lg font-medium">
+                                        ${productVariants
+                                    .find(v => v.size === (selectedSizes[p.productId] ?? defaultSize))
+                                    ?.price
+                                    .toFixed(2)}
+                            </h3>
 
-                            <h2 className="mt-3 font-medium">{p.name}</h2>
-                            {/* <p className="text-gray-500">${price}</p> */}
-                            <p className="text-gray-500">{p.brand}</p>
-                        </Link>
+                            {/* SIZE DROPDOWN INSIDE CARD */}
+                            <FormControl fullWidth sx={{ mt: 1.5 }}>
+                                <InputLabel id={`size-label-${p.productId}`}>Size</InputLabel>
+                                <Select
+                                    labelId={`size-label-${p.productId}`}
+                                    value={selectedSizes[p.productId] ?? defaultSize}
+                                    onChange={(e) => updateSize(p.productId, e.target.value)}
+                                    input={<OutlinedInput label="Size" />}
+                                    MenuProps={MenuProps}
+                                >
+                                    {productVariants.map((variant) => (
+                                        <MenuItem key={variant.variantId} value={variant.size}>
+                                            {variant.size}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </div>
                     );
                 })}
             </div>

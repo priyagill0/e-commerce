@@ -76,7 +76,7 @@ export default function FilterBar({ onChange }) {
     }
       
     return (
-        <div className="flex flex-wrap gap-6 mt-6 mb-10 justify-center w-full">
+        <div className="flex flex-wrap gap-6 mt-3 mb-5 justify-center w-full">
 
             {/* Sort */}
             <FormControl sx={{ m: 0.8, width: 160 }}>
