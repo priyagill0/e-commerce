@@ -62,12 +62,14 @@ public class DataSeeder implements CommandLineRunner {
         productRepository.save(exfoliatingToner); // UUID auto-generated
 
         // Variants
-        ProductVariant exfoliatingTonerVariant1 = new ProductVariant(exfoliatingToner, "240 mL", 12.99, 30, 0);
-        exfoliatingTonerVariant1.setVariantId("b1c2d3e4-f5a6-7890-b1c2-d3e4f5a67890");
+
+        // smaller size first to order by price ascending
+        ProductVariant exfoliatingTonerVariant1 = new ProductVariant(exfoliatingToner, "100 mL (Travel Size)", 6.99, 15, 0);
+        exfoliatingTonerVariant1.setVariantId("c2d3e4f5-a678-90b1-c2d3-e4f5a67890b1");
         variantRepository.save(exfoliatingTonerVariant1);
 
-        ProductVariant exfoliatingTonerVariant2 = new ProductVariant(exfoliatingToner, "100 mL (Travel Size)", 6.99, 15, 1);
-        exfoliatingTonerVariant2.setVariantId("c2d3e4f5-a678-90b1-c2d3-e4f5a67890b1");
+        ProductVariant exfoliatingTonerVariant2 = new ProductVariant(exfoliatingToner, "240 mL", 12.99, 30, 1);
+        exfoliatingTonerVariant2.setVariantId("b1c2d3e4-f5a6-7890-b1c2-d3e4f5a67890");
         variantRepository.save(exfoliatingTonerVariant2);
 
         // images
@@ -101,13 +103,14 @@ public class DataSeeder implements CommandLineRunner {
         productRepository.save(foamingFaceWash);
 
         // Variants
-        ProductVariant foamingFaceWashVariant1 = new ProductVariant(foamingFaceWash, "355 mL", 10.99, 25, 0);
+        ProductVariant foamingFaceWashVariant2 = new ProductVariant(foamingFaceWash, "100 mL Travel Size", 6.49, 10, 0);
+        foamingFaceWashVariant2.setVariantId("a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890");
+        variantRepository.save(foamingFaceWashVariant2);
+
+        ProductVariant foamingFaceWashVariant1 = new ProductVariant(foamingFaceWash, "355 mL", 10.99, 25, 1);
         foamingFaceWashVariant1.setVariantId("f1a2b3c4-d5e6-7890-f1a2-b3c4d5e67890");
         variantRepository.save(foamingFaceWashVariant1);
 
-        ProductVariant foamingFaceWashVariant2 = new ProductVariant(foamingFaceWash, "100 mL Travel Size", 6.49, 10, 1);
-        foamingFaceWashVariant2.setVariantId("a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890");
-        variantRepository.save(foamingFaceWashVariant2);
 
         // images
         ProductImage foamingFaceWashImage1 = new ProductImage(foamingFaceWash, foamingFaceWashVariant1);
@@ -164,7 +167,7 @@ public class DataSeeder implements CommandLineRunner {
         // ============================================================
         Product watermelonGlowMask = new Product();
         watermelonGlowMask.setProductId("e1f2a3b4-c5d6-7890-e1f2-a3b4c5d67890");
-        watermelonGlowMask.setName("Watermelon Glow Hydrating & Soothing Jelly Sheet Mask");
+        watermelonGlowMask.setName("Watermelon Glow Jelly Sheet Mask");
         watermelonGlowMask.setDescription("A hydrating and soothing sheet mask, infused with watermelon extract to help refresh the skin.");
         watermelonGlowMask.setProductType(ProductType.MASKS);
         watermelonGlowMask.setBrand("Glow Recipe");
@@ -433,10 +436,15 @@ public class DataSeeder implements CommandLineRunner {
         ultraRepairCream.getCategories().add(drySkin);
         productRepository.save(ultraRepairCream);
 
-        ProductVariant ultraRepairCreamV1 = new ProductVariant(ultraRepairCream, "170 g", 38.00, 30, 0);
+        ProductVariant ultraRepairCreamV2 = new ProductVariant(ultraRepairCream, "56 g", 29.00, 15, 0);
+        ultraRepairCreamV2.setVariantId("bb33cc55-dd66-ee77-ff88-001122334455");
+        variantRepository.save(ultraRepairCreamV2);
+
+        ProductVariant ultraRepairCreamV1 = new ProductVariant(ultraRepairCream, "170 g", 58.00, 30, 1);
         ultraRepairCreamV1.setVariantId("aa22bb44-cc55-dd66-ee77-ff8899001122");
         variantRepository.save(ultraRepairCreamV1);
 
+        // 3 images
         ProductImage ultraRepairCreamImg1 = new ProductImage(ultraRepairCream, ultraRepairCreamV1);
         ultraRepairCreamImg1.setImageId("aa55bbaa");
         ultraRepairCreamImg1.setImageUrl("/assets/products/" + ultraRepairCream.getProductId() + "/aa55bbaa.jpg");
@@ -650,16 +658,16 @@ public class DataSeeder implements CommandLineRunner {
         lipPlumperV1.setVariantId("aaff3344-bbcc-ddee-ff00-112233445566");
         variantRepository.save(lipPlumperV1);
 
-        ProductImage lipPlumperImg1 = new ProductImage(lipPlumper, lipPlumperV1);
-        lipPlumperImg1.setImageId("ab7865de");
-        lipPlumperImg1.setImageUrl("/assets/products/" + lipPlumper.getProductId() + "/ab7865de.jpg");
-        imageRepository.save(lipPlumperImg1);
-
+        // add zoom in photo first
         ProductImage lipPlumperImg2 = new ProductImage(lipPlumper, lipPlumperV1);
         lipPlumperImg2.setImageId("ab7865df");
         lipPlumperImg2.setImageUrl("/assets/products/" + lipPlumper.getProductId() + "/ab7865df.jpg");
         imageRepository.save(lipPlumperImg2);
 
+        ProductImage lipPlumperImg1 = new ProductImage(lipPlumper, lipPlumperV1);
+        lipPlumperImg1.setImageId("ab7865de");
+        lipPlumperImg1.setImageUrl("/assets/products/" + lipPlumper.getProductId() + "/ab7865de.jpg");
+        imageRepository.save(lipPlumperImg1); 
 
         // ============================================================
         // PRODUCT 21: Charcoal Detox Face Wash
