@@ -10,6 +10,7 @@ import ShoppingCartRounded from '@mui/icons-material/ShoppingCartRounded';
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useCart } from "@/app/components/CartContext";
+import BackButton from "./BackButton"; 
 
 // passing product id
 export default function ProductView({ productId }) {
@@ -103,9 +104,10 @@ export default function ProductView({ productId }) {
     // This selects the default size for the product variant (select the first IN STOCK size)
     useEffect(() => {
         if (!productVariants) return;
-      
-        // find first in-stock variant
-        const firstAvailable = productVariants.find(v => v.quantity > 0) || null;
+        // sort variants by index to maintain consistent order
+        const sortedVariants = [...productVariants].sort((a, b) => a.index - b.index);
+         // find first in-stock variant
+        const firstAvailable = sortedVariants.find(v => v.quantity > 0);
         setSelectedVariant(firstAvailable);
       }, [productVariants]);
 
@@ -119,7 +121,11 @@ export default function ProductView({ productId }) {
           <br></br>
           <Grid container spacing={2}>
 
-            {/* ImageCarousel on left side */}
+          <div style={{ position: "sticky", zIndex: 10 }}>
+            <BackButton />
+          </div>
+
+           {/* ImageCarousel on left side */}
             <Grid item xs={12} sm={12} md={6} lg={5}>
               <div>
                 <ImageCarousel images={productImages} />
@@ -127,7 +133,7 @@ export default function ProductView({ productId }) {
             </Grid> 
 
             {/* Product details on right side */}
-            <Grid size={5}>
+            <Grid item xs={12} sm={12} md={6} lg={5}>
                 <div>
                   <Typography variant="h5" component="h2" sx={{ fontWeight: 600, fontSize: "1.5rem",letterSpacing: "0.5px",color: "text.primary", }}>
                     {product.name}

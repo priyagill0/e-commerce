@@ -8,6 +8,7 @@ import EmptyCart from "./EmptyCart";
 import CartItem from "./CartItem";
 import Typography from "@mui/material/Typography";
 import { useCart } from "@/app/components/CartContext";
+import BackButton from "./BackButton";
 
 export default function Cart() {
 
@@ -107,17 +108,25 @@ if (cart.items.length === 0)  return <EmptyCart />;
 
 // Non-empty cart layout
 return (
+
+  <div>
+    
+  <div style={{ position: "sticky", }}>
+    <BackButton />
+  </div>
+
   <div
     style={{
       display: "flex",
       gap: "3rem",
-      marginTop: "5rem",
+      marginTop: "3rem",
       marginBottom: "3rem",
       marginLeft: "15rem",
       marginRight: "15rem",
       flexWrap: "wrap",
     }}
   >
+
     {/* Left Column: Cart Items */}
     <div style={{ flex: 1.5, minWidth: "300px" }}>
     
@@ -173,6 +182,8 @@ return (
         itemCount={cart.totalCartItems}
         onCheckout={() => router.push("/checkout")}
       />
+
+  </div>
 
   </div>
 

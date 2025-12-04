@@ -17,12 +17,12 @@ public class ProductVariantService {
     }
 
     public List<ProductVariant> getAllProductVariants() {
-        return repo.findAll();
+        return repo.findAllByOrderBySortOrderAsc();
     }
 
     // get all product variants for the specified product id
     public List<ProductVariant> getProductVariantsByProductId(String productId) {
-        return repo.findByProductProductId(productId);
+        return repo.findByProductProductIdOrderBySortOrderAsc(productId);
     }
 
     public ProductVariant addProductVariant(ProductVariant productVariant) {
