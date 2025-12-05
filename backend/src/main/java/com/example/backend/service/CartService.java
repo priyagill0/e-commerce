@@ -1,14 +1,18 @@
 package com.example.backend.service;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.model.Cart;
 import com.example.backend.model.CartItem;
+import com.example.backend.model.Customer;
 import com.example.backend.model.ProductVariant;
 import com.example.backend.repository.CartItemRepository;
 import com.example.backend.repository.CartRepository;
+import com.example.backend.repository.CustomerRepository;
 import com.example.backend.repository.ProductVariantRepository;
 
 import jakarta.transaction.Transactional;
@@ -19,19 +23,44 @@ public class CartService {
     private final CartRepository cartRepo;
     private final ProductVariantRepository variantRepo;
     private final CartItemRepository cartItemRepo;
+    private final CustomerRepository customerRepo;
 
-    public CartService(CartRepository cartRepo, ProductVariantRepository variantRepo, CartItemRepository cartItemRepo) {
+    public CartService(CartRepository cartRepo, ProductVariantRepository variantRepo, CartItemRepository cartItemRepo, CustomerRepository customerRepo) {
         this.cartRepo = cartRepo;
         this.variantRepo = variantRepo;
         this.cartItemRepo = cartItemRepo; 
+        this.customerRepo = customerRepo;
     }
 
-    public Cart getCart(String id) {
+    public Cart getCart(String id) { 
         return cartRepo.findById(id).orElse(null);
     }
 
-    public Cart getCartBySession(String sessionId) {
-        return cartRepo.findBySessionId(sessionId);
+    public Cart getCartBySession(String sessionId, String customerId) {
+        System.out.println("CustomerID: " + customerId);
+
+        // If logged in → use customerId
+        if (customerId != null) {
+            List<Cart> carts = cartRepo.findByCustomerUserId(customerId);
+            if (!carts.isEmpty()) return carts.get(0);
+
+            // If no cart, create a new cart for user
+            Cart newCart = new Cart();
+            Customer c = customerRepo.findById(customerId).orElseThrow();
+            System.out.println("Creating new cart for customer: " + c.getEmail());
+            newCart.setCustomer(c);
+            System.out.println("New cart created for customer: " + c.getEmail());
+            return cartRepo.save(newCart);
+        }
+
+        // if guest → use sessionId
+        Cart cart = cartRepo.findBySessionId(sessionId);
+        if (cart != null) return cart;
+
+        // create a guest cart if there is no cart
+        Cart newGuestCart = new Cart();
+        newGuestCart.setSessionId(sessionId);
+        return cartRepo.save(newGuestCart);  
     }
 
     public Cart save(Cart cart) {
@@ -39,16 +68,32 @@ public class CartService {
     }
 
     @Transactional
-    public Cart addItemToCart(String sessionId, String variantId, int quantity) {
+    public Cart addItemToCart(String sessionId, String customerId, String variantId, int quantity){
 
-        Cart cart = cartRepo.findBySessionId(sessionId);
+        Cart cart; 
 
-        // Create cart if it does not exist already
-        if (cart == null) {
-            cart = new Cart();
-            cart.setSessionId(sessionId);
-            cartRepo.save(cart);
+        if (customerId != null) {
+            // Logged in → use their cart
+            List<Cart> carts = cartRepo.findByCustomerUserId(customerId);
+            if (!carts.isEmpty()) {
+                cart = carts.get(0);
+            } else {
+                // Create new cart for logged-in user
+                cart = new Cart();
+                cart.setCustomer(customerRepo.findById(customerId).orElseThrow());
+                cart = cartRepo.save(cart);
+            }
+        } else {
+            // Guest → use session cart
+            cart = cartRepo.findBySessionId(sessionId);
+    
+            if (cart == null) {
+                cart = new Cart();
+                cart.setSessionId(sessionId);
+                cart = cartRepo.save(cart);
+            }
         }
+ 
 
         ProductVariant variant = variantRepo.findById(variantId)
             .orElseThrow(() -> new RuntimeException("Product variant not found."));
@@ -96,12 +141,18 @@ public class CartService {
         return cartRepo.save(cart);
     }
 
-    public Cart removeItem(String sessionId, Long itemId) {
-        Cart cart = cartRepo.findBySessionId(sessionId);
-        if (cart == null) {
-            throw new RuntimeException("Cart not found for the given session: " + sessionId);
+    public Cart removeItem(String sessionId, String customerId, Long itemId) {
+        Cart cart;
+        if (customerId != null) {
+            // logged-in user
+            cart = cartRepo.findByCustomerUserId(customerId).stream().findFirst().orElse(null);
+        } else {
+            // guest
+            cart = cartRepo.findBySessionId(sessionId);
         }
-
+    
+        if (cart == null) return new Cart(); // safe fallback
+    
         CartItem itemToRemove = cart.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
@@ -122,12 +173,21 @@ public class CartService {
             return cartRepo.save(cart); 
     } 
 
-    public Cart updateItemQuantity(String sessionId, Long itemId, int quantity) {
-        Cart cart = cartRepo.findBySessionId(sessionId);
-        if (cart == null) {
-            throw new RuntimeException("Cart not found for the given session: " + sessionId);
+    public Cart updateItemQuantity(String sessionId, String customerId, Long itemId, int quantity) {
+        // Cart cart = cartRepo.findBySessionId(sessionId);
+        // if (cart == null) {
+        //     throw new RuntimeException("Cart not found for the given session: " + sessionId);
+        // }
+        Cart cart;
+        if (customerId != null) {
+            // logged-in user
+            cart = cartRepo.findByCustomerUserId(customerId).stream().findFirst().orElse(null);
+        } else {
+            // guest
+            cart = cartRepo.findBySessionId(sessionId);
         }
-
+    
+        if (cart == null) return new Cart(); // safe fallback
         // Find the item in the cart
         CartItem itemToUpdate = cart.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))

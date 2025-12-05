@@ -12,12 +12,13 @@ import BackButton from "./BackButton";
 
 export default function Cart() {
 
-const [cart, setCart] = useState(null);
+  const { cart, setCart, fetchCart } = useCart();
+
 const [productImages, setProductImages] = useState([]);
-const router = useRouter(); 
-const { fetchCart } = useCart();
+const router = useRouter();  
 
 const deleteCartItem = async (itemId) => {
+
   try {
     const res = await fetch(
       `http://localhost:8080/api/cart/item/${itemId}`,
@@ -26,11 +27,20 @@ const deleteCartItem = async (itemId) => {
         credentials: "include",
       }
     );
-    const text = await res.text();
-    const data = text ? JSON.parse(text) : { items: [] };
-    console.log("Updated Cart Object after deletion:", data);
-    setCart(data);
-    fetchCart();
+    // const text = await res.text();
+    // const data = text ? JSON.parse(text) : { items: [] };
+    // Instead of parsing text, fetch updated cart directly
+    // const updatedCart = await fetchCart(); // make sure fetchCart returns the cart object
+    // setCart(updatedCart);
+    if (!res.ok) {
+      console.error("Failed to delete cart item");
+      return;
+    }
+    await fetchCart(); // updates context and cart safely
+
+    // console.log("Updated Cart Object after deletion:", data);
+    // setCart(data);
+    // fetchCart();
   }
   catch (err) {
     console.error("Error deleting item from cart:", err);
@@ -100,10 +110,9 @@ if (cart === null) {
       <CircularProgress size={70} />
     </div>
   );
-}
-
+} 
 // If cart is empty, render an empty page 
-if (cart.items.length === 0)  return <EmptyCart />;
+if (!cart?.items || cart.items.length === 0) return <EmptyCart />;
 
 
 // Non-empty cart layout

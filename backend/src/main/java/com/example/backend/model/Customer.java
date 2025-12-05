@@ -24,7 +24,7 @@ public class Customer {
     private String password;
 
     @ManyToOne(cascade = CascadeType.ALL) // address is always saved/updated along with customer.
-    @JoinColumn(name = "address_id", nullable = false) // foreign key, many to one
+    @JoinColumn(name = "address_id", nullable = true) // foreign key, many to one
     private Address address;
 
 

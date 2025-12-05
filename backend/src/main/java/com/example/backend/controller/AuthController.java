@@ -9,6 +9,8 @@ import com.example.backend.model.AuthRequest;
 import com.example.backend.model.Customer;
 import com.example.backend.service.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/auth")
 // @CrossOrigin(origins = "*")
@@ -25,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Customer login(@RequestBody AuthRequest request) {
-        return service.login(request);
+    public Customer login(@RequestBody AuthRequest request, HttpServletRequest http) {
+        return service.login(request, http);
     }
 }

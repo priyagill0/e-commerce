@@ -7,15 +7,36 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { styled } from '@mui/material/styles'; 
 import { useCart } from "./CartContext"
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { useState, useEffect } from "react";
 
 export default function Header() {
     // const [cart, setCart] = useState(null);
     const { cart } = useCart();
     const router = useRouter(); 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    // Check log in status
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const user = localStorage.getItem("user");
+            setIsLoggedIn(!!user);
+        }
+    }, []);
+
+        
   const goToCart = () => {
     router.push("/cart"); // navigate to cart page
   };
+
+
+  // User logic
+  const handleUserClick = (event) => setAnchorEl(event.currentTarget);
+
+  const closeMenu = () => setAnchorEl(null);
 
   // Styled Badge for Cart Icon
   const CartBadge = styled(Badge)`
@@ -52,7 +73,43 @@ export default function Header() {
                     <Link href="/best-sellers">Best Sellers</Link>
                 </nav>
 
-                {/* <Link href="/cart">🛒</Link> */}
+
+                {/* USER ICON */}
+                <IconButton onClick={handleUserClick}>
+                    <AccountCircleIcon fontSize="large" />
+                </IconButton>
+
+                {/* DROPDOWN MENU */}
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+                    {/* LOGGED IN MENU */}
+                    {/* {isLoggedIn && (
+                        <>
+                            <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>
+                            <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>
+                            <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>
+                        </>
+                    )} */}
+
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>}
+
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>}
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>}
+                  
+               
+
+                    {/* LOGGED OUT MENU */}
+                    {/* {!isLoggedIn && (
+                        <>
+                            <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>
+                            <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create Account</MenuItem>
+                        </>
+                    )} */}
+                    {!isLoggedIn &&   <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>}
+                    {!isLoggedIn &&    <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create Account</MenuItem>}
+
+                </Menu>
+
+                {/* CART ICON */}
                 <IconButton onClick={goToCart}>
                 <CartBadge badgeContent={cart?.totalCartItems || 0} color="primary" overlap="circular">
                     <ShoppingCartIcon fontSize="large" />

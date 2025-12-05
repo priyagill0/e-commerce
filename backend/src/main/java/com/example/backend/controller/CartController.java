@@ -30,17 +30,15 @@ public class CartController {
     // This session is tied to the user's session and can be used to track their cart.
 
     // Get cart by session ID. The session ID is retrieved from the HttpServletRequest.
+   
     @GetMapping
     public Cart getCart(HttpServletRequest request) {
+
         String sessionId = request.getSession().getId();
-        Cart cart = service.getCartBySessionId(sessionId);
-    
-        if (cart == null) {
-            // return empty cart to avoid frontend crash
-            Cart empty = new Cart(); 
-            return empty;
-        }
-        return cart;
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        System.out.println("GET CART session = " + sessionId);
+
+        return service.getCartBySession(sessionId, customerId);
     }
     
 
@@ -53,27 +51,29 @@ public class CartController {
     // add a product variant to cart. (this also creates a CartItem if needed)
     @PostMapping("/add")
     public Cart addToCart(HttpServletRequest request, @RequestParam String variantId, @RequestParam int quantity) {
+    
         String sessionId = request.getSession().getId();
-        Cart updatedCart = service.addItemToCart(sessionId, variantId, quantity);
-        return updatedCart;
+        String customerId = (String) request.getSession().getAttribute("customerId");
+    
+        return service.addItemToCart(sessionId, customerId, variantId, quantity);
     }
-
+    
     // remove item from cart.
     @DeleteMapping("/item/{itemId}")
     public Cart removeItem(@PathVariable Long itemId, HttpServletRequest request) {
         String sessionId = request.getSession().getId();
-        Cart cart = service.removeItem(sessionId, itemId);
-        return cart;
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        return service.removeItem(sessionId, customerId, itemId);
     }
 
     // update item quantity in cart.
     @PutMapping("/item/{itemId}")
     public Cart updateItemQuantity(@PathVariable Long itemId, @RequestParam int quantity, HttpServletRequest request) {
         String sessionId = request.getSession().getId();
-        Cart cart = service.updateItemQuantity(sessionId, itemId, quantity);
-        return cart;
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        return service.updateItemQuantity(sessionId, customerId, itemId, quantity);
     }
-
+  
     // session check
     @GetMapping("/session")
     public String getSession(HttpSession session) {
