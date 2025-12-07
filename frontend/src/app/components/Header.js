@@ -11,6 +11,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useState, useEffect } from "react";
+import Button from '@mui/material/Button';
 
 export default function Header() {
     // const [cart, setCart] = useState(null);
@@ -45,6 +46,12 @@ export default function Header() {
     right: -3px;
   }
   `; 
+
+  // Admin Logic
+  const [anchorAdmin, setAnchorAdmin] = useState(null);
+  const handleAdminClick = (event) => setAnchorAdmin(event.currentTarget);
+  const closeAdminMenu = () => setAnchorAdmin(null);
+
   
     return (
         <header
@@ -71,7 +78,20 @@ export default function Header() {
                     <Link href="/catalog">Catalog</Link>
                     <Link href="/offers">Offers</Link>
                     <Link href="/best-sellers">Best Sellers</Link>
+                    {/* <Link href="/admin">Admin</Link> */}
                 </nav>
+
+                {/* ADMIN DROPDOWN */}
+                <div>
+                <Button onClick={handleAdminClick} variant="text" color="inherit"
+                        sx={{ textTransform: "none", padding: 0, minWidth: 0, fontWeight: 400,  fontSize: "1rem",  lineHeight: 1.5 }}
+                > Admin</Button>
+                    <Menu anchorEl={anchorAdmin} open={Boolean(anchorAdmin)} onClose={closeAdminMenu}>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/inventory"); }}>Inventory</MenuItem>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/sales"); }}>Sales</MenuItem>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/accounts"); }}>Accounts</MenuItem>
+                </Menu>
+                </div>
 
 
                 {/* USER ICON */}
@@ -81,14 +101,7 @@ export default function Header() {
 
                 {/* DROPDOWN MENU */}
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-                    {/* LOGGED IN MENU */}
-                    {/* {isLoggedIn && (
-                        <>
-                            <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>
-                            <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>
-                            <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>
-                        </>
-                    )} */}
+                    {/* LOGGED IN MENU */} 
 
                     {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>}
 
@@ -97,13 +110,7 @@ export default function Header() {
                   
                
 
-                    {/* LOGGED OUT MENU */}
-                    {/* {!isLoggedIn && (
-                        <>
-                            <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>
-                            <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create Account</MenuItem>
-                        </>
-                    )} */}
+                    {/* LOGGED OUT MENU */} 
                     {!isLoggedIn &&   <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>}
                     {!isLoggedIn &&    <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create Account</MenuItem>}
 

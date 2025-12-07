@@ -13,4 +13,5 @@ public interface ProductVariantRepository  extends JpaRepository<ProductVariant,
     void deleteByProductProductId(String productId);
     List<ProductVariant> findByProductProductIdOrderBySortOrderAsc(String productId);
     List<ProductVariant> findAllByOrderBySortOrderAsc();
+    List<ProductVariant> findAllByOrderByProductProductIdAscSortOrderAsc();
 }

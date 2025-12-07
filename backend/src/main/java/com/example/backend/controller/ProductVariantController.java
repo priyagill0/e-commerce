@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.model.ProductVariant;
 import com.example.backend.service.ProductVariantService;
+
 
 
 @RestController
@@ -29,6 +31,11 @@ public class ProductVariantController {
         return service.getAllProductVariants();
     }
 
+    @GetMapping("/sorted")
+    public List<ProductVariant> getAllProductVariants() {
+        return service.getAllProductVariantsSorted();
+    }
+
     // Get variants for a specific product
     @GetMapping("/{productId}")
     public List<ProductVariant> getByProductId(@PathVariable String productId) {
@@ -38,5 +45,11 @@ public class ProductVariantController {
     @PostMapping
     public ProductVariant add(@RequestBody ProductVariant productVariant) {
         return service.addProductVariant(productVariant);
+    }
+    
+    @PutMapping("/{variantId}/qty")
+    public String updateQty(@PathVariable String variantId, @RequestBody int newQuantity) {
+        int updatedQty = service.updateStockQuantity(variantId, newQuantity);
+        return "Updated quantity to: " + updatedQty;
     }
 }

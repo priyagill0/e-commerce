@@ -12,16 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.model.Product;
 import com.example.backend.model.ProductType;
+import com.example.backend.model.ProductVariant;
 import com.example.backend.service.ProductService;
+import com.example.backend.service.ProductVariantService;
+import com.example.backend.service.ProductWithVariantDto;
 
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
 
     private final ProductService service;
+    private final ProductVariantService variantService;
 
-    public ProductController(ProductService service) {
+    public ProductController(ProductService service, ProductVariantService variantService) {
         this.service = service;
+        this.variantService = variantService;
     }
 
     // Get all products
@@ -48,6 +53,11 @@ public class ProductController {
     @PostMapping
     public Product add(@RequestBody Product product) {
         return service.addProduct(product);
+    }
+
+    @PostMapping("/addProductWithVariant")
+    public ProductVariant addProductWithVariant(@RequestBody ProductWithVariantDto dto) {
+        return variantService.addProductWithVariant(dto);
     }
 
     // delete product (uncomment if needed, it deletes all its variants and images too !! )

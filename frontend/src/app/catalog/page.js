@@ -32,6 +32,7 @@ export default function CatalogPage() {
     const [products, setProducts] = useState([]);
     const [variants, setVariants] = useState([]);
     const [productImages, setProductImages] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const [filters, setFilters] = useState({
         type: "",
@@ -39,7 +40,6 @@ export default function CatalogPage() {
         sort: "",
         categories: [],   
         search: "",
-        // size: {}, // size per productId
     });
     const theme = useTheme();
     const [selectedSizes, setSelectedSizes] = useState({});
@@ -66,15 +66,16 @@ export default function CatalogPage() {
             setProducts(await pRes.json());
             setVariants(await vRes.json());
             setProductImages(await images.json());
+            setLoading(false);
         }
         fetchData();
     }, []);
 
     // Apply filtering logic
     const filteredProducts = products
-        .filter((p) =>
-            productImages.some((img) => img.product.productId === p.productId)
-        )        
+        // .filter((p) =>
+        //     productImages.some((img) => img.product.productId === p.productId)
+        // )        
         .filter((p) => {
             // Product Type filter
             if (filters.type && p.productType !== filters.type) return false;
@@ -144,6 +145,10 @@ export default function CatalogPage() {
             return 0;
         });
 
+    if (loading) {
+        return <div className="text-center py-20">Loading products...</div>;
+    }
+
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
             <h1 className="text-3xl font-light mb-6">All Products</h1>
@@ -159,23 +164,24 @@ export default function CatalogPage() {
                     .sort((a, b) => a.index - b.index);   // sort by index to show travel size first
                     
                     const defaultSize = productVariants[0]?.size || "";
-                     
+                    console.log("trying to find img:");
                     const img = productImages.find(
                         (img) => img.product.productId === p.productId
-                      ) || productImages[0]; // fallback to first image if needed
+                      ) 
+                      
+                    const imageUrl = img?.imageUrl || "/assets/default.jpg";  // fallback image
 
                     return (
                         <div key={p.productId} className="border p-4 rounded shadow-sm hover:shadow-md transition">
-                            
                             {/* CLICKABLE PRODUCT CARD */}
                             <Link
                                 href={`/catalog/${p.productId}`}
                                 className="block"
                             >
                                 <img
-                                    src={`${img.imageUrl}`}
+                                    src={`${imageUrl}`}
                                     alt={p.name}
-                                    className="w-full h-55 object-cover"
+                                    className="w-full h-55 object-cover"             
                                 />
                     
                                 <h2 className="mt-3 font-medium">{p.name}</h2>
