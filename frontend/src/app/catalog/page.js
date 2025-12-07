@@ -10,6 +10,9 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from '@mui/material/styles';
 import dynamic from "next/dynamic";
+import Button from "@mui/material/Button";
+import { ShoppingCartRounded } from "@mui/icons-material";
+import { useCart } from "@/app/components/CartContext";
 
 const FilterBar = dynamic(() => import("@/app/components/FilterBar"), {
     ssr: false,
@@ -33,6 +36,7 @@ export default function CatalogPage() {
     const [variants, setVariants] = useState([]);
     const [productImages, setProductImages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [cart, setCart] = useState(null);
 
     const [filters, setFilters] = useState({
         type: "",
@@ -43,6 +47,7 @@ export default function CatalogPage() {
     });
     const theme = useTheme();
     const [selectedSizes, setSelectedSizes] = useState({});
+    const { fetchCart } = useCart();
 
     function updateSize(productId, size) {
         setSelectedSizes(prev => ({
@@ -70,6 +75,35 @@ export default function CatalogPage() {
         }
         fetchData();
     }, []);
+
+    const addToCart = async (variantId, quantity = 1) => {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/cart/add?variantId=${variantId}&quantity=${quantity}`,
+            { method: "POST", credentials: "include", } //the browser sends the JSESSIONID cookie to backend to save the sessionId.
+          ); 
+    
+          // Throw and error if user tries to add more than the in stock amount.
+          if (!res.ok) {
+            // Use the selectedVariant quantity to create a user-friendly message
+            const variant = variants.find(v => v.variantId === variantId);
+            const errorMessage = `Only ${variant?.quantity || 0} items are currently in stock.`;
+            throw new Error(errorMessage);
+          }
+    
+          // Fetch the updated cart from backend, this will update the cart item badge count
+          const cartRes = await fetch("http://localhost:8080/api/cart", { credentials: "include" });
+          const updatedCart = await cartRes.json();
+          setCart(updatedCart);
+          fetchCart();
+    
+          console.log("Added to cart!");
+        } catch (error) {
+          console.error("Error adding item:", error);
+          setErrorMessage(error.message);
+          setShowError(true);
+        }
+      };
 
     // Apply filtering logic
     const filteredProducts = products
@@ -212,7 +246,28 @@ export default function CatalogPage() {
                                         </MenuItem>
                                     ))}
                                 </Select>
-                            </FormControl>
+                            </FormControl> 
+{/* Add to Cart */}
+<div style={{ marginTop: "25px" }}>
+    <Button
+        variant="contained"
+        onClick={() => {
+            const selectedSize = selectedSizes[p.productId] ?? defaultSize;
+
+            const selectedVariant = productVariants.find(
+                (v) => v.size === selectedSize
+            );
+
+            addToCart(selectedVariant.variantId, 1);
+        }}
+        startIcon={<ShoppingCartRounded />}
+        sx={{ height: "38px", width: "100%" }}
+    >
+        Add To Cart
+    </Button>
+</div>
+
+
                         </div>
                     );
                 })}
