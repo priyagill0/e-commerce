@@ -1,20 +1,31 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function Login() {
     const [form, setForm] = useState({
         email: "",
         password: "",
-        sessionId: localStorage.getItem("sessionId")
+        sessionId: null
     });
 
+    const [redirect, setRedirect] = useState(null);
     const [message, setMessage] = useState("");
+
+    // Load session ID from local storage and URL parameters
+    useEffect(() => {
+        const id = localStorage.getItem("sessionId");
+        setForm(prev => ({ ...prev, sessionId: id }));
+
+        const params = new URLSearchParams(window.location.search);
+        setRedirect(params.get("redirect"));
+    }, []);
 
     const handleLogin = async () => {
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
             credentials: "include"
         });
@@ -30,13 +41,14 @@ export default function Login() {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            address: user.address // trying to save the entire address as one object
+            address: user.address
         }));
 
-        setMessage("Login successful!");
-
-        // Redirect to homepage
-        window.location.href = "/";
+        if (redirect === "checkout") {
+            window.location.href = "/checkout";
+        } else {
+            window.location.href = "/";
+        }
     };
 
     return (
@@ -46,8 +58,8 @@ export default function Login() {
             <input type="password" className="full border p-3 rounded mb-3" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
             <button className="bg-gray-800 text-white p-3 rounded hover:bg-black" onClick={handleLogin}>Login</button>
             <p style={{color:"red"}}>{message}</p>
-            <p style={{marginTop: 20}}>or</p>
-            <Link href="/signup"><button className="w-full mt-5 border border-gray-800 text-gray-900 p-3 rounded hover:bg-gray-100">Create an Account</button></Link>
+            <p style={{marginTop: 20}}>or</p> 
+            <Link href={`/signup?redirect=${redirect || ""}`}><button className="w-full mt-5 border border-gray-800 text-gray-900 p-3 rounded hover:bg-gray-100">Create an Account</button></Link>
         </div>
     );
 }

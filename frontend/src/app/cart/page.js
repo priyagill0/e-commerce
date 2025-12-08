@@ -113,7 +113,18 @@ if (cart === null) {
 } 
 // If cart is empty, render an empty page 
 if (!cart?.items || cart.items.length === 0) return <EmptyCart />;
-
+if (productImages.length === 0) {
+  return (
+    <div style={{
+      height: "80vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
+      <CircularProgress size={70} />
+    </div>
+  );
+}
 
 // Non-empty cart layout
 return (
@@ -189,9 +200,17 @@ return (
         shipping={cart.shipping}
         total={cart.total}
         itemCount={cart.totalCartItems}
-        onCheckout={() => router.push("/checkout")}
-      />
-
+        onCheckout={() => {
+          const customer = JSON.parse(localStorage.getItem("user"));
+        
+          if (!customer) {
+            router.push("/login?redirect=checkout");
+            return;
+          }
+        
+          router.push("/checkout");
+        }}
+        />
   </div>
 
   </div>

@@ -11,6 +11,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useCart } from "@/app/components/CartContext";
 import BackButton from "./BackButton"; 
+import CircularProgress from "@mui/material/CircularProgress";
 
 // passing product id
 export default function ProductView({ productId }) {
@@ -113,7 +114,16 @@ export default function ProductView({ productId }) {
 
     //  Prevent null errors
     if (!product || !productVariants) {
-        return <div>Loading product...</div>;
+      return (
+        <div style={{
+          height: "80vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <CircularProgress size={70} />
+        </div>
+      );
     }
 
     return (
@@ -121,9 +131,11 @@ export default function ProductView({ productId }) {
           <br></br>
           <Grid container spacing={2}>
 
-          <div style={{ position: "sticky", zIndex: 10 }}>
-            <BackButton />
-          </div>
+          <Grid item xs={12}>
+            <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
+              <BackButton />
+            </div>
+          </Grid>
 
            {/* ImageCarousel on left side */}
             <Grid item xs={12} sm={12} md={6} lg={5}>
@@ -146,7 +158,7 @@ export default function ProductView({ productId }) {
                 <br></br>
 
                 {/* stack so that sizes are side by side */}
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={1} flexWrap="wrap">
                   {productVariants && productVariants.length > 0 ? (
                     productVariants.map((variant, index) => (
                     <div key={index} style={{ textAlign: "center" }}>
@@ -203,9 +215,24 @@ export default function ProductView({ productId }) {
                   </Typography>
                 )}
 
+                {/* Low Stock Warning  */}
+                {selectedVariant && selectedVariant.quantity <= 5 && (
+                  <Typography 
+                    sx={{ 
+                      fontSize: "0.9rem", 
+                      color: "red", 
+                      marginTop: 1, 
+                      fontWeight: 700 
+                    }}
+                  >
+                    Only {selectedVariant.quantity} left! Selling fast.
+                  </Typography>
+                )}
+
+
                 <br></br>
               
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={1} flexWrap="wrap">
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                     {/* Quantity Label */}
                     <span style={{ fontSize: "0.9rem", fontWeight: 500, marginBottom: "4px" }}>
@@ -287,7 +314,7 @@ export default function ProductView({ productId }) {
                 <Typography variant="h5" component="h2" sx={{ fontWeight: 400, fontSize: "1.3rem",letterSpacing: "0.5px",color: "text.primary", }}>
                     Description:
                 </Typography> 
-                <Typography variant="h5" component="h2" sx={{ fontWeight: 300, fontSize: "1rem",letterSpacing: "0.5px",color: "text.primary", marginTop:"8px" }}>
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 300, fontSize: "1rem",letterSpacing: "0.5px",color: "text.primary", marginTop:"8px", wordWrap: "break-word", overflowWrap: "break-word", }}>
                   {product.description}
                 </Typography> 
                 <br></br>

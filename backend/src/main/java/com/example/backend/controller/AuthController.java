@@ -30,4 +30,9 @@ public class AuthController {
     public Customer login(@RequestBody AuthRequest request, HttpServletRequest http) {
         return service.login(request, http);
     }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+    }
 }

@@ -61,7 +61,8 @@ export default function CartItem({ cartItem, productImages, hideActions = true }
 
       {/* Price */}
       <Typography variant="body2" sx={{ fontWeight: 500, fontSize: "0.85rem" }}>
-        ${cartItem.productVariant.price.toFixed(2)}
+        {/* ${cartItem.productVariant.price.toFixed(2)} */}
+        ${(cartItem.productVariant.price*cartItem.quantityInCart).toFixed(2)}
       </Typography>
     </div>
   );
