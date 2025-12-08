@@ -17,7 +17,7 @@ import com.example.backend.service.OrderService;
 
 @RestController
 @RequestMapping("/api/order")
-@CrossOrigin(origins = "*") // needed to connect frontend
+//@CrossOrigin(origins = "*") // needed to connect frontend
 public class OrderController {
     
     private final OrderService service;

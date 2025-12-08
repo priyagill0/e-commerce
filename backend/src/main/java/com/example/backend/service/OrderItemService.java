@@ -25,6 +25,9 @@ public class OrderItemService {
     public List<OrderItem> getOrderItemByOrderItemId(String orderItemId) {
         return repo.findByOrderItemId(orderItemId);
     }
+    public List<OrderItem> getOrderItemByOrderId(String orderId) {
+        return repo.findByOrder_OrderId(orderId);
+    }
 
     public OrderItem addOrderItem(OrderItem orderItem) {
         return repo.save(orderItem);

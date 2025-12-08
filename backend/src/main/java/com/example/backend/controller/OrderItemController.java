@@ -16,7 +16,7 @@ import com.example.backend.service.OrderItemService;
 
 
 @RestController
-@RequestMapping("/api/oder_item")
+@RequestMapping("/api/order-item")
 public class OrderItemController {
     
     private final OrderItemService service;
@@ -32,10 +32,14 @@ public class OrderItemController {
 
     // Get variants for a specific product
     @GetMapping("/{orderItemId}")
-    public List<OrderItem> getByProductId(@PathVariable String productId) {
+    public List<OrderItem> getByOrderItemId(@PathVariable String productId) {
         return service.getOrderItemByOrderItemId(productId);
     }
 
+    @GetMapping("/order/{orderId}")
+    public List<OrderItem> getByOrderId(@PathVariable String orderId) {
+        return service.getOrderItemByOrderId(orderId);
+    }
 
     @PostMapping
     public OrderItem add(@RequestBody OrderItem orderItem) {

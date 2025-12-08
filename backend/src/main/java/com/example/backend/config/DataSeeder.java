@@ -4,15 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.example.backend.model.Address;
 import com.example.backend.model.Category;
+import com.example.backend.model.Customer;
+import com.example.backend.model.Payment;
 import com.example.backend.model.Product;
 import com.example.backend.model.ProductImage;
 import com.example.backend.model.ProductType;
 import com.example.backend.model.ProductVariant;
 import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.CustomerRepository;
 import com.example.backend.repository.ProductImageRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.ProductVariantRepository;
+import com.example.backend.service.AuthService;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -30,6 +35,11 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private AuthService authService;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -37,7 +47,34 @@ public class DataSeeder implements CommandLineRunner {
         if (productRepository.count() > 0) {
             return;
         }
+        // creating a customer: 
+      
+        
+        Address janeDoeAddress= new Address("abc123", "123 sesame street", "Ontario", "Canada", "L3R 0D7", "555-443-2453", "Toronto");
+        Payment janPay= new Payment("hijk1234", "1234567890123456", "Jane Doe", "09/28", "123");
+        Customer janeDoe = new Customer("abc1234", "Jane", "Doe", "janedoe@gmail.com", "password123", janeDoeAddress, janPay);
 
+        authService.register(janeDoe);
+
+        Address jenniferAddress= new Address("abc124", "123 bob street", "Ontario", "Canada", "L3R 0D7", "555-443-2457", "Toronto");
+        Payment jenPay= new Payment("hijk1238", "1234567890123467", "Jennifer Anniston", "08/28", "234");
+        Customer jennifer = new Customer("abc1235", "Jennifer", "Anniston", "jenny@gmail.com", "password123", jenniferAddress, jenPay);
+        authService.register(jennifer);
+
+        Address kimAddress= new Address("abc125", "123 calabasis street", "Ontario", "Canada", "L3R 0D7", "555-443-4387","Toronto");
+        Payment kimPay= new Payment("hijk1239", "1234567890123478", "Kim Kardashian", "08/27", "894");
+        Customer kimk = new Customer("abc1236", "Kim", "Kardashian", "kimk@gmail.com", "password123", kimAddress, kimPay);
+        authService.register(kimk);
+        
+        Address bellaAddress= new Address("abc126", "456 bob street", "Ontario", "Canada", "L3R 0D7", "555-443-550", "Toronto");
+        Payment belPay= new Payment("hijk1290", "1234567890123896", "Bella Hadid", "08/32", "467");
+        Customer bellaHadid = new Customer("abc1237", "Bella", "Hadid", "bellahadid@gmail.com", "password123", bellaAddress, belPay);
+        authService.register(bellaHadid);
+
+        Address haileyAddress= new Address("abc127", "123 beibs ave.", "Ontario", "Canada", "L3R 0D7", "555-443-550", "Toronto");
+        Payment hailPay= new Payment("hijk1678", "1234567890123406", "Hailey Bieber", "05/28", "274");
+        Customer HaileyBieb = new Customer("abc1238", "Hailey", "Beiber", "haileybeibs@gmail.com", "password123", haileyAddress, hailPay);
+        authService.register(HaileyBieb);
         //Creating Categories:
 
         Category exfoliating = new Category("Exfoliating");

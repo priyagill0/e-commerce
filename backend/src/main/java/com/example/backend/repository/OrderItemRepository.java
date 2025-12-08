@@ -9,4 +9,5 @@ import com.example.backend.model.OrderItem;
 
 public interface OrderItemRepository  extends JpaRepository<OrderItem, String> {
     List<OrderItem> findByOrderItemId(String orderItemId);
+    List<OrderItem> findByOrder_OrderId(String orderId);
 }

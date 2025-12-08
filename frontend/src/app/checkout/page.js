@@ -19,13 +19,15 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [cart, setCart] = useState(null);
-
+  let billingAddressId = ""
+  let shippingAddressId = ""
   // Shipping form state
   const [street, setStreet] = useState("");
   const [province, setProvince] = useState("");
   const [country, setCountry] = useState("");
   const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
 
   // Billing form state
   const [billingStreet, setBillingStreet] = useState("");
@@ -33,12 +35,13 @@ export default function CheckoutPage() {
   const [billingCountry, setBillingCountry] = useState("");
   const [billingZip, setBillingZip] = useState("");
   const [billingPhone, setBillingPhone] = useState("");
+  const [billingCity, setBillingCity] = useState("");
 
   // Checkbox state
   const [sameAsShipping, setSameAsShipping] = useState(false);
 
   // Payment form state
-  const [creditCardNumber, setCreditCardNumber] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
   const [name, setName] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvc, setCvc] = useState("");
@@ -47,6 +50,7 @@ export default function CheckoutPage() {
   const [paymentError, setPaymentError] = useState("");
 
   const [productImages, setProductImages] = useState([]);
+  const [message, setMessage] = useState("");
 
    // Load cart
    useEffect(() => {
@@ -77,67 +81,99 @@ export default function CheckoutPage() {
       setBillingCountry(country);
       setBillingZip(zip);
       setBillingPhone(phone);
+      setBillingCity(city);
+
     }
-  }, [sameAsShipping, street, province, country, zip, phone]);
+  }, [sameAsShipping, street, province, country, zip, phone, city]);
 
   useEffect(() => {
     console.log("Cart at checkout:", cart);
   }, [cart]);
+  useEffect(() => {
+    async function fetchAddress() {
+      try {
+        const res = await fetch("http://localhost:8080/api/checkout/address", {
+          credentials: "include", // include session cookie
+        });
   
-
+        if (!res.ok) return; // user not logged in
+  
+        const address = await res.json(); // GET returns JSON
+        if (!address) return;
+  
+        setStreet(address.street || "");
+        setProvince(address.province || "");
+        setCountry(address.country || "");
+        setZip(address.zip || "");
+        setPhone(address.phone || "");
+        setCity(address.city || "");
+  
+        // Toggle checkbox ON
+        setSameAsShipping(true);
+      } catch (err) {
+        console.error("Failed to load user address", err);
+      }
+    }
+  
+    fetchAddress();
+  }, []);
+  // Build form object for the backend
+  
   const handleCheckout = async () => {
     setLoading(true);
     setPaymentError("");
 
+    if (cardNumber.length !== 16) {
+      setPaymentError("Credit Card Authorization Failed.");
+      setLoading(false);
+      return;
+    }
+  
+    const form = {
+      cartId: cart.cartId,
+
+      shippingStreet: street,
+      shippingProvince: province,
+      shippingCountry: country,
+      shippingZip: zip,
+      shippingPhone: phone,
+
+      sameAsShipping,
+      billingStreet,
+      billingProvince,
+      billingCountry,
+      billingZip,
+      billingPhone,
+
+      cardNumber,
+      name,
+      expiryDate,
+      cvc,
+    };
     try {
-      // Save Shipping Info
-      const shippingRes = await fetch("http://localhost:8080/api/checkout/shipping", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ street, province, country, zip, phone }),
-      });
-      const shippingAddressId = await shippingRes.text();
+      const res = await fetch(
+        "http://localhost:8080/api/checkout/checkoutconfirm",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(form),
+        }
+      );
 
-      // Billing: If same as shipping, use shipping values
-      const billingRes = await fetch("http://localhost:8080/api/checkout/billing", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        street: sameAsShipping ? street : billingStreet,
-        province: sameAsShipping ? province : billingProvince,
-        country: sameAsShipping ? country : billingCountry,
-        zip: sameAsShipping ? zip : billingZip,
-        phone: sameAsShipping ? phone : billingPhone
-      }),
-    });
+      const data = await res.json();
 
-      const billingAddressId = await billingRes.text();
-
-      // Validate payment
-      if (creditCardNumber.length !== 16) {
-        setPaymentError("Credit Card Authorization Failed.");
+      if (!res.ok) {
+        setMessage("Checkout failed: " + data.error);
         setLoading(false);
         return;
       }
 
-      // Process Payment
-      const paymentRes = await fetch("http://localhost:8080/api/checkout/payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ creditCardNumber, name, expiryDate, cvc }),
-      });
-      const approved = await paymentRes.json();
-
-      if (!approved) {
-        setPaymentError("Credit Card Authorization Failed.");
-        setLoading(false);
-        return;
-      }
-
-      router.push(`/order-confirmation/${cart.cartId}`);
+      // Redirect to confirmation
+      router.push(`/checkout/order-confirmation/${data.orderId}`);
     } catch (err) {
       console.error(err);
-      setPaymentError("Something went wrong during checkout.");
+      setMessage("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -145,15 +181,9 @@ export default function CheckoutPage() {
 
   if (!cart) {
     return (
-      <div
-        style={{
-          height: "80vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CircularProgress size={70} />
+      <div style={{ marginTop: "5rem", textAlign: "center" }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading your cart...</Typography>
       </div>
     );
   }
@@ -174,7 +204,7 @@ export default function CheckoutPage() {
         display: "flex",
         gap: "3rem",
         flexWrap: "wrap",
-        alignItems: "center",
+        alignItems: "flex-start",
         
         marginTop: "5rem",
         marginRight: "15rem",
@@ -194,10 +224,12 @@ export default function CheckoutPage() {
           Shipping Information
         </Typography>
         <TextField fullWidth label="Street" value={street} onChange={(e) => setStreet(e.target.value)} margin="normal" />
+        <TextField fullWidth label="City" value={city} onChange={(e) => setCity(e.target.value)} margin="normal" />
         <TextField fullWidth label="Province" value={province} onChange={(e) => setProvince(e.target.value)} margin="normal" />
         <TextField fullWidth label="Country" value={country} onChange={(e) => setCountry(e.target.value)} margin="normal" />
         <TextField fullWidth label="Zip/Postal Code" value={zip} onChange={(e) => setZip(e.target.value)} margin="normal" />
         <TextField fullWidth label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} margin="normal" />
+       
 
         {/* Billing Checkbox */}
         <FormControlLabel
@@ -218,11 +250,13 @@ export default function CheckoutPage() {
               Billing Information
             </Typography>
             <TextField fullWidth label="Street" value={billingStreet} onChange={(e) => setBillingStreet(e.target.value)} margin="normal" />
-       
+            <TextField fullWidth label="City" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} margin="normal" />
             <TextField fullWidth label="Province" value={billingProvince} onChange={(e) => setBillingProvince(e.target.value)} margin="normal" />
             <TextField fullWidth label="Country" value={billingCountry} onChange={(e) => setBillingCountry(e.target.value)} margin="normal" />
             <TextField fullWidth label="Zip/Postal Code" value={billingZip} onChange={(e) => setBillingZip(e.target.value)} margin="normal" />
             <TextField fullWidth label="Phone" value={billingPhone} onChange={(e) => setBillingPhone(e.target.value)} margin="normal" />
+           
+          
           </>
         )}
 
@@ -230,7 +264,7 @@ export default function CheckoutPage() {
         <Typography variant="h5" sx={{ fontWeight: 700, marginTop: 4, marginBottom: 2 }}>
           Payment Information
         </Typography>
-        <TextField fullWidth label="Card Number" value={creditCardNumber} onChange={(e) => setCreditCardNumber(e.target.value)} margin="normal" />
+        <TextField fullWidth label="Card Number" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} margin="normal" />
         <TextField fullWidth label="Name on Card" value={name} onChange={(e) => setName(e.target.value)} margin="normal" />
         <TextField fullWidth label="Expiry Date (MM/YY)" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} margin="normal" />
         <TextField fullWidth label="CVC" value={cvc} onChange={(e) => setCvc(e.target.value)} margin="normal" />

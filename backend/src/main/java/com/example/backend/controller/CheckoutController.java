@@ -6,7 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import com.example.backend.model.Address;
+import com.example.backend.model.CheckoutRequest;
+import com.example.backend.model.Order;
 import com.example.backend.service.CheckoutService;
+import jakarta.servlet.http.HttpServletRequest;
+
 
 
 @RestController
@@ -20,65 +24,29 @@ public class CheckoutController {
         this.checkoutService = checkoutService;
     }
 
-    /**
-     * Save shipping info
-     */
-    @PostMapping("/shipping")
-    public String saveShipping(
-            @RequestParam String street,
-            @RequestParam String province,
-            @RequestParam String country,
-            @RequestParam String zip,
-            @RequestParam String phone
-            ) {
-        Address address = checkoutService.saveShippingInfo(
-                street, province, country, zip, phone
-        );
-        return  address.getAddressId();
+    @GetMapping("/address")
+    public Address getUserAddress(HttpServletRequest request) {
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        if (customerId == null) {
+            return null; // or throw 401 Unauthorized
+        }
+        return checkoutService.getUserAddress(customerId);
     }
 
-    @PostMapping("/billing")
-    public String saveBilling(
-            @RequestParam String street,
-            @RequestParam String province,
-            @RequestParam String country,
-            @RequestParam String zip,
-            @RequestParam String phone
-            ) {
-        Address address = checkoutService.saveBillingInfo(
-                street, province, country, zip, phone
-        );
-        return  address.getAddressId();
-    }
-    /**
-     * Process payment
-     
+     /**
+     * Submit order after payment
+     * @param cartId
+     * @param shippingAddressId
+     * @param billingAddressId - optional
      */
-    @PostMapping("/payment")
-    public boolean processPayment( 
-        @RequestParam String creditCardNumber,
-        @RequestParam String name ,
-        @RequestParam String expiryDate,
-        @RequestParam String cvc
+    @PostMapping("/checkoutconfirm")
+    public ResponseEntity<?> checkoutOrder( HttpServletRequest request,
+            @RequestBody CheckoutRequest req
+    
     ) throws Exception {
-        boolean approved = checkoutService.processPayment(creditCardNumber, name, expiryDate, cvc );
-
-       return approved;
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        String orderId = checkoutService.checkoutOrder(req, customerId );
+       return ResponseEntity.ok(Map.of("orderId", orderId));
+   
     }
-
-    // /**
-    //  * Submit order after payment
-    //  * @param cartId
-    //  * @param shippingAddressId
-    //  * @param billingAddressId - optional
-    //  */
-    // @PostMapping("/submit")
-    // public ResponseEntity<Map<String, Object>> submitOrder(
-    //         @RequestParam String cartId,
-    //         @RequestParam Long shippingAddressId,
-    //         @RequestParam(required = false) Long billingAddressId
-    // ) {
-    //     String orderId = checkoutService.submitOrder(cartId, shippingAddressId, billingAddressId);
-    //     return ResponseEntity.ok(Map.of("orderId", orderId, "message", "Order confirmed"));
-    // }
 }

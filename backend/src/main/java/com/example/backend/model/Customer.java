@@ -27,17 +27,21 @@ public class Customer {
     @JoinColumn(name = "address_id", nullable = true) // foreign key, many to one
     private Address address;
 
+    @ManyToOne(cascade = CascadeType.ALL) // address is always saved/updated along with customer.
+    @JoinColumn(name = "payment_id", nullable = true) // foreign key, many to one
+    private Payment payment;
 
 
     public Customer() {}
 
-    public Customer(String userId,String firstName, String lastName, String email , String password, Address address ) {
+    public Customer(String userId,String firstName, String lastName, String email , String password, Address address, Payment payment ) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName= lastName;
         this.email = email;
         this.password= password;
         this.address = address;
+        this.payment= payment;
 
     }
     public String getUserId(){
@@ -77,6 +81,12 @@ public class Customer {
     }
     public void setAddress(Address address) {
         this.address = address;
+    }
+    public Payment getPayment() {
+        return payment;
+    }
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
    
 }

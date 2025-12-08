@@ -13,7 +13,15 @@ export default function Signup() {
             province: "",
             country: "",
             zip: "",
-            phone: ""
+            phone: "",
+            city: ""
+        },
+        payment: {
+            cardNumber: "",
+            name: "",
+            expiryDate: "",
+            cvc: ""
+           
         }
     });
     const [message, setMessage] = useState("");
@@ -35,19 +43,29 @@ export default function Signup() {
             <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
             {/* Left Column */}
             <div style={{ flex: 1, minWidth: "300px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+             <h3>Account Information</h3> 
                 <input className="border p-3 rounded"  placeholder="First Name" onChange={(e) => setForm({ ...form, firstName: e.target.value })}/>
                 <input className="border p-3 rounded"  placeholder="Last Name"  onChange={(e) => setForm({ ...form, lastName: e.target.value })}/>
                 <input className="border p-3 rounded"  placeholder="Email"  onChange={(e) => setForm({ ...form, email: e.target.value })}/>
                 <input className="border p-3 rounded"  type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })}/>
-            </div>
-
-            {/* Right Column */}
-            <div style={{ flex: 1, minWidth: "300px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+               <h3>Address Information</h3> 
                 <input className="border p-3 rounded" placeholder="Street" onChange={(e) => setForm({ ...form, address: { ...form.address, street: e.target.value } })}/>
+                <input className="border p-3 rounded" placeholder="City" onChange={(e) => setForm({ ...form, address: { ...form.address, city: e.target.value } })} />
                 <input className="border p-3 rounded" placeholder="Province" onChange={(e) => setForm({ ...form, address: { ...form.address, province: e.target.value } })} />
                 <input className="border p-3 rounded" placeholder="Country" onChange={(e) => setForm({ ...form, address: { ...form.address, country: e.target.value } })}/>
                 <input className="border p-3 rounded" placeholder="Zip" onChange={(e) => setForm({ ...form, address: { ...form.address, zip: e.target.value } })} />
                 <input className="border p-3 rounded" placeholder="Phone" onChange={(e) => setForm({ ...form, address: { ...form.address, phone: e.target.value } }) } />
+
+            </div>
+
+            {/* Right Column */}
+            <div style={{ flex: 1, minWidth: "300px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <h3>Payment Information</h3>
+                <input className="border p-3 rounded" placeholder="Card Number" onChange={(e) => setForm({ ...form, payment: { ...form.payment, cardNumber: e.target.value } })}/>
+                <input className="border p-3 rounded" placeholder="Name on Card" onChange={(e) => setForm({ ...form, payment: { ...form.payment, name: e.target.value } })} />
+                <input className="border p-3 rounded" placeholder="Expiration Date" onChange={(e) => setForm({ ...form, payment: { ...form.payment, expiryDate: e.target.value } })} />
+                <input className="border p-3 rounded" placeholder="CVC" onChange={(e) => setForm({ ...form, payment: { ...form.payment, cvc: e.target.value } })}/>
+          
             </div>
             </div>
             <br></br>

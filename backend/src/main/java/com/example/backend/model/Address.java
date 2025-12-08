@@ -16,6 +16,7 @@ public class Address {
     private String addressId = UUID.randomUUID().toString();
     
     private String street;
+    private String city;
     private String province;
     private String country;
     private String zip ;
@@ -24,13 +25,14 @@ public class Address {
 
     public Address() {}
 
-    public Address(String addressId, String street, String province, String country, String zip, String phone ) {
+    public Address(String addressId, String street, String province, String country, String zip, String phone, String city ) {
         this.addressId = addressId;
         this.street = street;
         this.province = province;
         this.country = country;
         this.zip  = zip ;
         this.phone  = phone;
+        this.city  = city;
     }
 
     public String getAddressId() {
@@ -68,6 +70,12 @@ public class Address {
     }
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    public String getCity() {
+        return city;
+    }
+    public void setCity(String city) {
+        this.city = city;
     }
    
 }

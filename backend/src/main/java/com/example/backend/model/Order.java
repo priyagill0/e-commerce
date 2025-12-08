@@ -49,6 +49,10 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private Customer customer; // to link order to user
 
+    @ManyToOne
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment; // to link order to user
+
     public Order() {}  
 
     public Order(String orderId , Status status, double subtotal, double tax, double shipping, double total, LocalDateTime placedAt, LocalDateTime updatedAt, Address shippingAddress, Address billingAddress, Customer customer) {
@@ -133,5 +137,11 @@ public class Order {
     }
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+    public Payment getPayment() {
+        return payment;
+    }
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 }
