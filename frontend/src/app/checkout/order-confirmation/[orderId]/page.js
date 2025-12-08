@@ -188,7 +188,7 @@ useEffect(() => {
         </Typography>
         <Typography>Size: {item.productVariant?.size ?? "-"}</Typography>
         <Typography>Qty: {item.qty ?? 0}</Typography>
-        <Typography>${(item.productPrice ?? 0).toFixed(2)}</Typography>
+        <Typography>${((item.productPrice ?? 0) * item.qty ).toFixed(2)}</Typography>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import OrderSummary from "./OrderSummary";
 import CartItem from "./CartItem";
 import BackButton from "./BackButton";
-
+import { useCart} from "@/app/components/CartContext";
 
 
 export default function CheckoutPage() {
@@ -51,6 +51,7 @@ export default function CheckoutPage() {
 
   const [productImages, setProductImages] = useState([]);
   const [message, setMessage] = useState("");
+  const { fetchCart } = useCart(); // need this to clear cart after checkout
 
    // Load cart
    useEffect(() => {
@@ -169,6 +170,8 @@ export default function CheckoutPage() {
         return;
       }
 
+      fetchCart(); // clear cart in context
+      
       // Redirect to confirmation
       router.push(`/checkout/order-confirmation/${data.orderId}`);
     } catch (err) {

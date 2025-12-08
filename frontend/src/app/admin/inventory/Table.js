@@ -67,6 +67,7 @@ export default function AdminTable({ columns, rows, onEdit }) {
         {columns.map((c, colIndex) => {
           const value = row[c.id];
 
+          // Editable cell logic
           if (c.id === "update") {
             return (
               <TableCell key={`${row.variant_id}-${c.id}-${colIndex}`}>
@@ -77,6 +78,7 @@ export default function AdminTable({ columns, rows, onEdit }) {
             );
           }
 
+          // Render editable cell
           if (c.editable && editing?.id === row.variant_id && editing?.field === c.id) {
             return (
               <TableCell key={`${row.variant_id}-${c.id}-${colIndex}`}>
@@ -98,7 +100,7 @@ export default function AdminTable({ columns, rows, onEdit }) {
 
           return (
             <TableCell key={`${row.variant_id}-${c.id}-${colIndex}`}>
-              {c.format ? c.format(Number(value)) : value}
+                {c.render ? c.render(row) : (c.format ? c.format(Number(value)) : value)}
             </TableCell>
           );
         })}

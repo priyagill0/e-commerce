@@ -56,7 +56,7 @@ export default function CartItem({ cartItem, productImages, updateQuantity, dele
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0 }}>{cartItem.productVariant.product.name}</h3>
           <p style={{ margin: 0, fontWeight: "bold" }}>
-            ${cartItem.productVariant.price.toFixed(2)}
+            ${(cartItem.productVariant.price*cartItem.quantityInCart).toFixed(2)}
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function CartItem({ cartItem, productImages, updateQuantity, dele
         {/* Warning message if quantity >= stock */}
         {cartItem.quantityInCart >= cartItem.productVariant.quantity && (
           <Typography variant="caption" color="error" sx={{ display: "block", mt: 0.5 }}>
-            No more stock is available for this item.
+            Max quantity reached.
           </Typography>
         )}
 

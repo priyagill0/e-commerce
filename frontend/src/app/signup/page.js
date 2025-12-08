@@ -33,7 +33,12 @@ export default function Signup() {
             body: JSON.stringify(form)
         });
 
-        if (res.ok) setMessage("Account created sucessfully!");
+        if (res.ok){
+            setMessage("Account created sucessfully!");
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 150);
+        }
         else setMessage("Something went wrong.");
     };
 

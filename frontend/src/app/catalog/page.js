@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import Button from "@mui/material/Button";
 import { ShoppingCartRounded } from "@mui/icons-material";
 import { useCart } from "@/app/components/CartContext";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const FilterBar = dynamic(() => import("@/app/components/FilterBar"), {
     ssr: false,
@@ -105,6 +106,10 @@ export default function CatalogPage() {
         }
       };
 
+    const availableVariants = variants.filter(
+        (variant) => variant.quantity > 0
+    );
+    
     // Apply filtering logic
     const filteredProducts = products
         // .filter((p) =>
@@ -180,7 +185,16 @@ export default function CatalogPage() {
         });
 
     if (loading) {
-        return <div className="text-center py-20">Loading products...</div>;
+         return (
+            <div style={{
+              height: "80vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+              <CircularProgress size={70} />
+            </div>
+          );
     }
 
     return (
@@ -195,10 +209,23 @@ export default function CatalogPage() {
  
                     const productVariants = variants
                     .filter(v => v.product.productId === p.productId)
-                    .sort((a, b) => a.index - b.index);   // sort by index to show travel size first
-                    
-                    const defaultSize = productVariants[0]?.size || "";
-                    console.log("trying to find img:");
+                    .sort((a, b) => a.index - b.index);
+
+                    const availableProductVariants = productVariants.filter(
+                    (variant) => variant.quantity > 0
+                    );
+
+                    const defaultSize = availableProductVariants[0]?.size || "";
+
+                    // Auto-set selected size if missing
+                    if (!selectedSizes[p.productId] && defaultSize) {
+                        setSelectedSizes(prev => ({
+                            ...prev,
+                            [p.productId]: defaultSize
+                        }));
+                    }
+
+                    // console.log("trying to find img:");
                     const img = productImages.find(
                         (img) => img.product.productId === p.productId
                       ) 
@@ -231,6 +258,8 @@ export default function CatalogPage() {
                             </h3>
 
                             {/* SIZE DROPDOWN INSIDE CARD */}
+                            {availableProductVariants.length > 0 && (
+
                             <FormControl fullWidth sx={{ mt: 1.5 }}>
                                 <InputLabel id={`size-label-${p.productId}`}>Size</InputLabel>
                                 <Select
@@ -240,34 +269,35 @@ export default function CatalogPage() {
                                     input={<OutlinedInput label="Size" />}
                                     MenuProps={MenuProps}
                                 >
-                                    {productVariants.map((variant) => (
-                                        <MenuItem key={variant.variantId} value={variant.size}>
-                                            {variant.size}
-                                        </MenuItem>
-                                    ))}
+                                {availableProductVariants.map((variant) => (
+                                    <MenuItem key={variant.variantId} value={variant.size}>
+                                        {variant.size}
+                                    </MenuItem>
+                                ))}
                                 </Select>
                             </FormControl> 
-{/* Add to Cart */}
-<div style={{ marginTop: "25px" }}>
-    <Button
-        variant="contained"
-        onClick={() => {
-            const selectedSize = selectedSizes[p.productId] ?? defaultSize;
-
-            const selectedVariant = productVariants.find(
-                (v) => v.size === selectedSize
-            );
-
-            addToCart(selectedVariant.variantId, 1);
-        }}
-        startIcon={<ShoppingCartRounded />}
-        sx={{ height: "38px", width: "100%" }}
-    >
-        Add To Cart
-    </Button>
-</div>
+                            )}
 
 
+                            {/* Add to Cart */}
+                            <div style={{ marginTop: "25px" }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        const selectedSize = selectedSizes[p.productId] ?? defaultSize;
+
+                                        const selectedVariant = productVariants.find(
+                                            (v) => v.size === selectedSize
+                                        );
+
+                                        addToCart(selectedVariant.variantId, 1);
+                                    }}
+                                    startIcon={<ShoppingCartRounded />}
+                                    sx={{ height: "38px", width: "100%" }}
+                                >
+                                    Add To Cart
+                                </Button>
+                            </div> 
                         </div>
                     );
                 })}

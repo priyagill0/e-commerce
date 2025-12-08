@@ -111,6 +111,44 @@ export default function InventoryPage() {
     { id: "price", label: "Price", minWidth: 100, format: (v) => `$${v.toFixed(2)}` },
     { id: "categories", label: "Categories", minWidth: 100 },
     { id: "quantity", label: "Quantity", minWidth: 50, editable: true },
+    {
+      id: "stockStatus",
+      label: "Stock",
+      minWidth: 100,
+      render: (row) => {
+        if (row.quantity === 0) {
+          return (
+            <span style={{ color: "RED", fontWeight: "bold", fontSize: "15px" }} title="Sold Out">
+              SOLD OUT
+            </span>
+          );
+        }
+      
+        let color = "green";
+        let title = `Qty: ${row.quantity}`;
+      
+        if (row.quantity <= 5) {
+          color = "red";
+          title = `Critically Low (${row.quantity} left)`;
+        } else if (row.quantity <= 15) {
+          color = "orange";
+          title = `Low (${row.quantity} left)`;
+        }
+      
+        return (
+          <span
+            style={{
+              display: "inline-block",
+              width: "12px",
+              height: "12px",
+              borderRadius: "50%",
+              backgroundColor: color,
+            }}
+            title={title}
+          />
+        );
+      }      
+    },
     { id: "update", label: "Update", minWidth: 50 },
   ];
 
@@ -130,6 +168,7 @@ export default function InventoryPage() {
         price: Number(v.price),
         quantity: v.quantity,
         categories: v.product.categories.map((c) => c.name).join(", "),
+        lowStock: v.quantity <= 5, // low stock indicator
       }));
 
       setRows(mappedData);

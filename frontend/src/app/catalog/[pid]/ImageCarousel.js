@@ -49,7 +49,9 @@ const ImageCarousel = ({ images }) => {
 const styles = {
   carouselContainer: {
     position: "relative",
-    width: "700px",
+    width: "555px",
+    // width: "100%",       // ← full width of Grid item
+
     height: "500px",
     margin: "0 auto",
     overflow: "hidden",
