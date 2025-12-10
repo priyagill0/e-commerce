@@ -48,15 +48,38 @@ export default function Header() {
     const router = useRouter(); 
     const [anchorEl, setAnchorEl] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState("");
 
-    // Check log in status
+    // Check log in status + user name
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const user = localStorage.getItem("user");
-            setIsLoggedIn(!!user);
-        }
-    }, []);
+        const loadUser = () => {
+            const stored = localStorage.getItem("user");
+            if (!stored) {
+                setIsLoggedIn(false);
+                setUserName("");
+                return;
+            }
 
+            const userObj = JSON.parse(stored);
+            setIsLoggedIn(true);
+
+            // Use firstName if stored, fallback to email prefix
+            const display =
+                userObj.firstName ||
+                (userObj.email ? userObj.email.split("@")[0] : "");
+
+            setUserName(display);
+        };
+
+        loadUser();
+        window.addEventListener("storage", loadUser);
+        return () => window.removeEventListener("storage", loadUser);
+    }, []);
+<<<<<<< Updated upstream
+
+=======
+        
+>>>>>>> Stashed changes
   const goToCart = () => router.push("/cart"); // navigate to cart page
 
   // User logic
@@ -96,10 +119,26 @@ export default function Header() {
                     <Link href="/best-sellers">Best Sellers</Link>
                 </nav>
 
+<<<<<<< Updated upstream
                 {/* USER ICON */}
                 <IconButton onClick={handleUserClick}>
                     <AccountCircleIcon fontSize="large" />
                 </IconButton>
+=======
+
+                {/* USER ICON + NAME */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <IconButton onClick={handleUserClick}>
+                        <AccountCircleIcon fontSize="large" />
+                    </IconButton>
+
+                    {isLoggedIn && (
+                        <span style={{ fontSize: "0.75rem", marginTop: "-6px" }}>
+                            {userName}
+                        </span>
+                    )}
+                </div>
+>>>>>>> Stashed changes
 
                 {/* DROPDOWN MENU */}
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
@@ -110,7 +149,14 @@ export default function Header() {
                             <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>
                             <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>
                         </>
+<<<<<<< Updated upstream
                     )}
+=======
+                    )} */}
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>}
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>}
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>}
+>>>>>>> Stashed changes
 
                     {/* LOGGED OUT MENU */}
                     {!isLoggedIn && (
@@ -118,7 +164,13 @@ export default function Header() {
                             <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>
                             <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create Account</MenuItem>
                         </>
+<<<<<<< Updated upstream
                     )}
+=======
+                    )} */}
+                    {!isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/login");}}>Login</MenuItem>}
+                    {!isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/signup");}}>Create an Account</MenuItem>}
+>>>>>>> Stashed changes
                 </Menu>
 
                 {/* <Link href="/cart">🛒</Link> */}
