@@ -60,6 +60,12 @@ public class ProductController {
         return variantService.addProductWithVariant(dto);
     }
 
+    // get related products for a given product id 
+    @GetMapping("/related/{productId}")
+    public List<Product> getRelatedProducts(@PathVariable String productId) {
+        return service.getRelatedProducts(productId);
+    }
+
     // delete product (uncomment if needed, it deletes all its variants and images too !! )
     // @DeleteMapping("/{productId}")
     // public Product delete(@PathVariable String productId) {

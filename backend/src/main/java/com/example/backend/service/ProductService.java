@@ -84,4 +84,26 @@ public class ProductService {
         }
         return product;
     }
+
+    public List<Product> getRelatedProducts(String productId) {
+
+        Product current = repo.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        List<Product> products = new ArrayList<>(repo.findAll());
+
+        // remove the current product from products list
+        products.removeIf(p -> p.getProductId().equals(productId));
+
+        // only keep products that share at least one category
+        products.removeIf(p ->
+                p.getCategories().stream().noneMatch(c ->
+                        current.getCategories().contains(c)
+                )
+        );
+
+        // limit to 3 related products
+        return products.stream().limit(3).toList();
+}
+ 
 }

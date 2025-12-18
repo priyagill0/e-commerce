@@ -17,6 +17,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 export default function ProductView({ productId }) {
     const [product, setProduct] = useState(null);
     const [productVariants, setProductVariants] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [relatedProductImages, setRelatedProductImages] = useState({});
+
     const [sizes, setSizes] = useState(null);
     const [price, setPrice] = useState(null);
     const [selectedVariant, setSelectedVariant] = useState(null);
@@ -111,6 +114,55 @@ export default function ProductView({ productId }) {
         const firstAvailable = sortedVariants.find(v => v.quantity > 0);
         setSelectedVariant(firstAvailable);
       }, [productVariants]);
+
+    // get related products for reccomendations
+    useEffect(() => {
+        if (!product || !product.categories) return;
+
+        fetch(`http://localhost:8080/api/product/related/${productId}`)
+        .then((res) => res.json())
+          .then((data) => {
+            console.log("Related Products:", data);
+            setRelatedProducts(data);
+          })
+    }, [product, productId]);
+
+    // get images for the related products
+    useEffect(() => {
+      if (!relatedProducts || relatedProducts.length === 0) return;
+
+      const fetchImages = async () => {
+        try {
+          const imagePromises = relatedProducts.map(async (product) => {
+            const res = await fetch(
+              `http://localhost:8080/api/product_image/${product.productId}`
+            );
+            const data = await res.json();
+
+            // take the FIRST image only
+            return {
+              productId: product.productId,
+              imageUrl: data?.[0]?.imageUrl || null,
+            };
+          });
+
+          const results = await Promise.all(imagePromises);
+
+          // convert array → object
+          const imageMap = {};
+          results.forEach(({ productId, imageUrl }) => {
+            imageMap[productId] = imageUrl;
+          });
+
+          setRelatedProductImages(imageMap);
+        } catch (err) {
+          console.error("Error fetching related product images", err);
+        }
+      };
+
+      fetchImages();
+    }, [relatedProducts]);
+
 
     //  Prevent null errors
     if (!product || !productVariants) {
@@ -342,9 +394,52 @@ export default function ProductView({ productId }) {
                     />
                 ))}
                 </Stack>
-            </div>
-            )}
+                <br></br>
+                <hr></hr> 
 
+                <div style={{ marginTop: "12px" }}>
+
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 400, fontSize: "1.3rem",letterSpacing: "0.5px",color: "text.primary", }}>
+                  Customers Also Viewed:
+                </Typography> 
+                <Stack direction="row" spacing={1} flexWrap="wrap" marginTop={"10px"}>
+
+           {relatedProducts.map((product) => (
+              <div key={product.productId}>
+                {relatedProductImages[product.productId] && (
+                  <div
+                  onClick={() => router.push(`/catalog/${product.productId}`)}
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <img
+                    src={relatedProductImages[product.productId]}
+                    alt={product.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+
+                )}
+
+                {/* <Typography>
+                  {product.name}
+                </Typography> */}
+              </div>
+            ))}
+            </Stack>
+            </div>
+              </div>  
+            )}
             </Grid>
                 
             {/* these snackbar and alert components help display errors to the user for trying to add ro cart when no more stock available. */}
