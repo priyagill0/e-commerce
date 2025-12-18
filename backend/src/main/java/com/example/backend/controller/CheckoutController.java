@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import com.example.backend.model.Address;
 import com.example.backend.model.CheckoutRequest;
 import com.example.backend.model.Order;
+import com.example.backend.model.Payment;
 import com.example.backend.service.CheckoutService;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,6 +32,14 @@ public class CheckoutController {
             return null; // or throw 401 Unauthorized
         }
         return checkoutService.getUserAddress(customerId);
+    }
+    @GetMapping("/getpay")
+    public Payment getUserPayment(HttpServletRequest request) {
+        String customerId = (String) request.getSession().getAttribute("customerId");
+        if (customerId == null) {
+            return null; // or throw 401 Unauthorized
+        }
+        return checkoutService.getUserPayment(customerId);
     }
 
      /**

@@ -46,6 +46,16 @@ export default function CheckoutPage() {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvc, setCvc] = useState("");
 
+  // New (manual) payment form state
+  const [newCardNumber, setNewCardNumber] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newExpiryDate, setNewExpiryDate] = useState("");
+  const [newCvc, setNewCvc] = useState("");
+
+  const [useSavedPayment, setUseSavedPayment] = useState(false);
+
+
+
   const [loading, setLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
@@ -111,6 +121,7 @@ export default function CheckoutPage() {
   
         // Toggle checkbox ON
         setSameAsShipping(true);
+
       } catch (err) {
         console.error("Failed to load user address", err);
       }
@@ -118,6 +129,42 @@ export default function CheckoutPage() {
   
     fetchAddress();
   }, []);
+
+  useEffect(() => {
+    console.log("Cart at checkout:", cart);
+  }, [cart]);
+  useEffect(() => {
+    async function fetchPayment() {
+      try {
+        const res = await fetch("http://localhost:8080/api/checkout/getpay", {
+          credentials: "include", // include session cookie
+        });
+  
+        if (!res.ok) return; // user not logged in
+  
+        const payment = await res.json(); // GET returns JSON
+        if (!payment) return;
+        setCardNumber(payment.cardNumber || "");
+        setName(payment.name || "");
+        setExpiryDate(payment.expiryDate || "");
+        setCvc(payment.cvc || "");
+
+
+      } catch (err) {
+        console.error("Failed to load user payment", err);
+      }
+    }
+  
+    fetchPayment();
+  }, []);
+  useEffect(() => {
+    if (cardNumber) {
+      setUseSavedPayment(true);
+    }
+  }, [cardNumber]);
+  
+
+
   // Build form object for the backend
   
   const handleCheckout = async () => {
@@ -146,10 +193,10 @@ export default function CheckoutPage() {
       billingZip,
       billingPhone,
 
-      cardNumber,
-      name,
-      expiryDate,
-      cvc,
+      cardNumber: useSavedPayment ? cardNumber : newCardNumber,
+      name: useSavedPayment ? name : newName,
+      expiryDate: useSavedPayment ? expiryDate : newExpiryDate,
+      cvc: useSavedPayment ? cvc : newCvc,
     };
     try {
       const res = await fetch(
@@ -263,15 +310,80 @@ export default function CheckoutPage() {
           </>
         )}
 
+
         {/* Payment */}
         <Typography variant="h5" sx={{ fontWeight: 700, marginTop: 4, marginBottom: 2 }}>
           Payment Information
         </Typography>
+        <FormControlLabel
+        control={
+          <Checkbox
+            checked={useSavedPayment}
+            onChange={(e) => setUseSavedPayment(e.target.checked)}
+          />
+        }
+        label="Use saved payment"
+        sx={{ mb: 2 }}
+        />
+        {/* Saved payment display */}
+        {useSavedPayment ? (
+          <div
+            style={{
+              padding: "1rem",
+              border: "1px solid #e0e0e0",
+              borderRadius: "8px",
+              background: "#fafafa",
+            }}
+          >
+            <Typography>
+              <strong>Card:</strong> **** **** **** {(cardNumber || "").slice(-4)}
+            </Typography>
+            <Typography>
+              <strong>Name:</strong> {name}
+            </Typography>
+            <Typography>
+              <strong>Expiry:</strong> {expiryDate}
+            </Typography>
+          </div>
+        ) : (
+          <>
+            <TextField
+              fullWidth
+              label="Card Number"
+              value={newCardNumber}
+              onChange={(e) => setNewCardNumber(e.target.value)}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Name on Card"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Expiry Date (MM/YY)"
+              value={newExpiryDate}
+              onChange={(e) => setNewExpiryDate(e.target.value)}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="CVC"
+              value={newCvc}
+              onChange={(e) => setNewCvc(e.target.value)}
+              margin="normal"
+            />
+          </>
+        )}
+
+        {/* {!useSavedPayment ? (
         <TextField fullWidth label="Card Number" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} margin="normal" />
         <TextField fullWidth label="Name on Card" value={name} onChange={(e) => setName(e.target.value)} margin="normal" />
         <TextField fullWidth label="Expiry Date (MM/YY)" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} margin="normal" />
         <TextField fullWidth label="CVC" value={cvc} onChange={(e) => setCvc(e.target.value)} margin="normal" />
-
+        )} */}
         {paymentError && <Typography color="error" sx={{ mt: 2 }}>{paymentError}</Typography>}
 
         <Button

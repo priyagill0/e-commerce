@@ -49,6 +49,12 @@ public class CheckoutService {
         return customerService.getCustomerById(customerId).getAddress();
     }
 
+    public Payment getUserPayment(String customerId) {
+        // assuming one address per user; adjust if multiple addresses
+        
+        return customerService.getCustomerById(customerId).getPayment();
+    }
+
     public String checkoutOrder(CheckoutRequest req, String customerId)throws InterruptedException {
         Address shippingAddress;
         boolean flag = false;
