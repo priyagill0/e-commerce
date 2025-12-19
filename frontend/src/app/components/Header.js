@@ -125,51 +125,16 @@ export default function Header() {
                 {/* ADMIN DROPDOWN */}
                 {isAdmin && (
                 <div>
-                    <Button
-                    onClick={handleAdminClick}
-                    variant="text"
-                    color="inherit"
-                    sx={{
-                        textTransform: "none",
-                        padding: 0,
-                        minWidth: 0,
-                        fontWeight: 400,
-                        fontSize: "1rem",
-                        lineHeight: 1.5,
-                    }}
-                    >
-                    Admin
-                    </Button>
-                    <Menu
-                    anchorEl={anchorAdmin}
-                    open={Boolean(anchorAdmin)}
-                    onClose={closeAdminMenu}
-                    >
-                    <MenuItem
-                        onClick={() => {
-                        closeAdminMenu();
-                        router.push("/admin/inventory");
-                        }}
-                    >
-                        Inventory
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                        closeAdminMenu();
-                        router.push("/admin/sales");
-                        }}
-                    >
-                        Sales
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                        closeAdminMenu();
-                        router.push("/admin/accounts");
-                        }}
-                    >
-                        Accounts
-                    </MenuItem>
-                    </Menu>
+
+                <Button onClick={handleAdminClick} variant="text" color="inherit"
+                        sx={{ textTransform: "none", padding: 0, minWidth: 0, fontWeight: 400,  fontSize: "1rem",  lineHeight: 1.5 }}
+                > Admin</Button>
+                <Menu anchorEl={anchorAdmin} open={Boolean(anchorAdmin)} onClose={closeAdminMenu}>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/inventory"); }}>Inventory</MenuItem>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/sales"); }}>Sales</MenuItem>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/orders"); }}>Orders</MenuItem>
+                    <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/accounts"); }}>Accounts</MenuItem>
+                </Menu>
                 </div>
 )}
   

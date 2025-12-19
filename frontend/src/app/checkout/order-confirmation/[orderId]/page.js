@@ -18,7 +18,7 @@ export default function OrderConfirmation({ params }) {
       try {
         const resOrder = await fetch(`http://localhost:8080/api/order/${orderId}`);
         const orderList = await resOrder.json();
-        setOrder(orderList[0]);
+        setOrder(orderList);
 
         const resItems = await fetch(`http://localhost:8080/api/order-item/order/${orderId}`);
         

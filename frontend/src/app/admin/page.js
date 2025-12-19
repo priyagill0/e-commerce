@@ -29,6 +29,7 @@ export default function Admin() {
         <Link href="/admin/accounts">Customer Accounts</Link>
         <Link href="/admin/inventory">Product Inventory</Link>
         <Link href="/admin/sales">Sales History</Link>
+        <Link href="/admin/orders">Order Management</Link>
       </div>
     </div>
   );
