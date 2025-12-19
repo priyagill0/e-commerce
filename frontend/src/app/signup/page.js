@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { Button } from "@mui/material";
 
 export default function Signup() {
     const [form, setForm] = useState({
@@ -73,10 +74,36 @@ export default function Signup() {
             </div>
             </div>
             <br></br>
-            <button className="bg-gray-800 text-white p-3 rounded hover:bg-black" onClick={handleSubmit}>Sign Up</button>
+            {/* <button className="bg-gray-800 text-white p-3 rounded hover:bg-black" onClick={handleSubmit}>Sign Up</button> */}
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ textTransform: 'none' }}  // keeps text as-is
+                onClick={handleSubmit}
+            >
+                Sign Up
+            </Button>
+
             <p style={{color:"red"}}>{message}</p>
             <p style={{marginTop: 20}}>or</p>
-            <Link href="/login"><button className="w-full mt-5 border border-gray-800 text-gray-900 p-3 rounded hover:bg-gray-100">Already have an account? Login</button></Link>
+            <Link href="/login" passHref>
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                    mt: 2,
+                    backgroundColor: '#ffffff',       // white by default
+                    color: '#1976d2',                 // blue text
+                    border: '1px solid #1976d2',     // optional blue border
+                    '&:hover': {
+                        backgroundColor: '#e3f2fd',    // light blue on hover
+                    },
+                    textTransform: "none"
+                    }}
+            >
+                Already have an account? Login
+            </Button>
+            </Link>
         </div>
     );
 }

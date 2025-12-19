@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import AdminTable from "./Table";
+import { useRouter } from "next/navigation";
 
 export default function SalesPage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const [customerFilter, setCustomerFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
@@ -15,6 +17,17 @@ export default function SalesPage() {
   const [customerOptions, setCustomerOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
+  
+    // only allow acces to ADMIN
+    useEffect(() => {
+      const stored = localStorage.getItem("user");
+      const user = stored ? JSON.parse(stored) : null;
+  
+      if (!user || user.adminRole !== true) {
+        // Redirect non-admins
+        router.replace("/"); 
+      }
+    }, [router]);
 
   useEffect(() => {
     async function loadSales() {

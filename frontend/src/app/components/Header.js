@@ -12,6 +12,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
+import { Box } from "@mui/material";
 
 export default function Header() {
     // const [cart, setCart] = useState(null);
@@ -19,6 +20,7 @@ export default function Header() {
     const router = useRouter(); 
     const [anchorEl, setAnchorEl] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // Check log in status
     useEffect(() => {
@@ -42,6 +44,9 @@ export default function Header() {
 
             const userObj = JSON.parse(stored);
             setIsLoggedIn(true);
+
+            // Check admin role
+            setIsAdmin(userObj.adminRole === true);
 
             // Use firstName if stored, fallback to email prefix
             const display =
@@ -97,39 +102,50 @@ export default function Header() {
         >
             {/* LEFT: LOGO */}
             <Link href="/">
-                <h2 style={{ cursor: "pointer", fontWeight: 600 }}>Aura Beauty</h2>
+                <Box
+                    component="img"
+                    src="/logo.png"  
+                    alt="Aura Beauty"
+                    sx={{
+                    height: 70,       // adjust logo height
+                    cursor: "pointer",
+                    }}
+                />
             </Link>
 
             {/* RIGHT: NAV + CART */}
             <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
                 <nav style={{ display: "flex", gap: "2rem" }}>
+                    <Link href="/">Home</Link>
                     <Link href="/catalog">Catalog</Link>
-                    <Link href="/offers">Offers</Link>
-                    <Link href="/best-sellers">Best Sellers</Link>
-                    {/* <Link href="/admin">Admin</Link> */}
+                    {/* <Link href="/offers">Offers</Link>
+                    <Link href="/best-sellers">Best Sellers</Link> */}
                 </nav>
 
                 {/* ADMIN DROPDOWN */}
+                {isAdmin && (
                 <div>
+
                 <Button onClick={handleAdminClick} variant="text" color="inherit"
                         sx={{ textTransform: "none", padding: 0, minWidth: 0, fontWeight: 400,  fontSize: "1rem",  lineHeight: 1.5 }}
                 > Admin</Button>
-                    <Menu anchorEl={anchorAdmin} open={Boolean(anchorAdmin)} onClose={closeAdminMenu}>
+                <Menu anchorEl={anchorAdmin} open={Boolean(anchorAdmin)} onClose={closeAdminMenu}>
                     <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/inventory"); }}>Inventory</MenuItem>
                     <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/sales"); }}>Sales</MenuItem>
                     <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/orders"); }}>Orders</MenuItem>
                     <MenuItem onClick={() => { closeAdminMenu(); router.push("/admin/accounts"); }}>Accounts</MenuItem>
                 </Menu>
                 </div>
-
+)}
+  
                 {/* USER ICON + NAME */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <IconButton onClick={handleUserClick}>
-                        <AccountCircleIcon fontSize="large" />
+                        <AccountCircleIcon fontSize="large" sx={{ color: "#1976d2" }} />
                     </IconButton>
 
                     {isLoggedIn && (
-                        <span style={{ fontSize: "0.75rem", marginTop: "-6px" }}>
+                        <span style={{ fontSize: "0.75rem", marginTop: "-6px", color: "#1976d2" }}>
                             {userName}
                         </span>
                     )}
@@ -154,7 +170,7 @@ export default function Header() {
                 {/* CART ICON */}
                 <IconButton onClick={goToCart}>
                 <CartBadge badgeContent={cart?.totalCartItems || 0} color="primary" overlap="circular">
-                    <ShoppingCartIcon fontSize="large" />
+                    <ShoppingCartIcon fontSize="large" sx={{ color: "#1976d2" }} />
                 </CartBadge>
                 </IconButton>
             </div>

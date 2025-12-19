@@ -31,10 +31,12 @@ public class Customer {
     @JoinColumn(name = "payment_id", nullable = true) // foreign key, many to one
     private Payment payment;
 
+    // Admin users must set this role to true.
+    private boolean adminRole = false;
 
     public Customer() {}
 
-    public Customer(String userId,String firstName, String lastName, String email , String password, Address address, Payment payment ) {
+    public Customer(String userId,String firstName, String lastName, String email , String password, Address address, Payment payment) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName= lastName;
@@ -42,12 +44,10 @@ public class Customer {
         this.password= password;
         this.address = address;
         this.payment= payment;
-
     }
     public String getUserId(){
         return userId;
     }
-
    
     public void setUserId(String userId) {
         this.userId = userId;
@@ -87,6 +87,14 @@ public class Customer {
     }
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    public boolean getAdminRole(){
+        return adminRole;
+    }
+
+    public void setAdminRole(boolean adminRole) {
+        this.adminRole = adminRole;
     }
    
 }

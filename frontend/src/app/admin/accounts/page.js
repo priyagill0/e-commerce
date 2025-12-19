@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Typography,
   Button,
+  Link
 } from "@mui/material";
 
 export default function AccountManagement() {
@@ -24,6 +25,17 @@ export default function AccountManagement() {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [error, setError] = useState("");
+
+  // only allow acces to ADMIN
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    const user = stored ? JSON.parse(stored) : null;
+
+    if (!user || user.adminRole !== true) {
+      // Redirect non-admins
+      router.replace("/"); 
+    }
+  }, [router]);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -91,7 +103,9 @@ export default function AccountManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((u) => (
+          {users
+            .filter((u) => !u.adminRole) // only non-admin users (customers only)
+            .map((u) => (
               <TableRow key={u.userId}>
                 <TableCell>{u.userId}</TableCell>
                 <TableCell>{`${u.firstName} ${u.lastName}`}</TableCell>
@@ -144,9 +158,20 @@ export default function AccountManagement() {
                 <TableBody>
                   {orders.map((o) => (
                     <TableRow key={o.orderId}>
-                      <TableCell>{o.orderId}</TableCell>
+                        <TableCell>
+                        <Link
+                            href={`/checkout/order-confirmation/${o.orderId}`}
+                            style={{
+                            color: "#1976d2",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            }}
+                        >
+                            {o.orderId}
+                        </Link>
+                        </TableCell>
                       <TableCell>{o.status}</TableCell>
-                      <TableCell>${o.total}</TableCell>
+                      <TableCell>${o.total.toFixed(2)}</TableCell>
                       <TableCell>
                         {new Date(o.placedAt).toLocaleString()}
                       </TableCell>

@@ -437,6 +437,7 @@ export default function ProductView({ productId }) {
               </div>
             ))}
             </Stack>
+            <br></br>
             </div>
               </div>  
             )}

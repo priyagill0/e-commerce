@@ -49,6 +49,17 @@ export default function AdminUserEditPage() {
     },
   });
 
+    // only allow acces to ADMIN
+    useEffect(() => {
+    const stored = localStorage.getItem("user");
+    const user = stored ? JSON.parse(stored) : null;
+
+    if (!user || user.adminRole !== true) {
+        // Redirect non-admins
+        router.replace("/"); 
+    }
+    }, [router]); 
+    
   /* ---------------- FETCH USER ---------------- */
   useEffect(() => {
     async function fetchUser() {

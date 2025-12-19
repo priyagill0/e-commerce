@@ -60,9 +60,16 @@ public class DataSeeder implements CommandLineRunner {
         if (productRepository.count() > 0) {
             return;
         }
-        // creating a customer: 
-      
-        
+
+        // ADMIN user:
+        Address adminAddress= new Address("xyz987", "123 whale road", "Ontario", "Canada", "L3R 9K7", "666-443-11234", "Toronto");
+        Payment adminPay= new Payment("hjv679", "1234567890123456", "Jane Doe", "09/28", "123");
+        Customer admin = new Customer("abc0308", "Admin", "Admin", "Admin@gmail.com", "Admin", adminAddress, adminPay);
+        admin.setAdminRole(true); // this property sets ADMIN credentials.
+        authService.register(admin);
+
+        // creating a customers:
+
         Address janeDoeAddress= new Address("abc123", "123 sesame street", "Ontario", "Canada", "L3R 0D7", "555-443-2453", "Toronto");
         Payment janPay= new Payment("hijk1234", "1234567890123456", "Jane Doe", "09/28", "123");
         Customer janeDoe = new Customer("abc1234", "Jane", "Doe", "janedoe@gmail.com", "password123", janeDoeAddress, janPay);

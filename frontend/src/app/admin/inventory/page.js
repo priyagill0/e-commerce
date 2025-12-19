@@ -6,11 +6,24 @@ import AdminTable from "@/app/admin/inventory/Table";
 import Button from "@mui/material/Button";
 import AddProductModal from "./AddProductModal";
 import AddVariantModal from "./AddVariantModal";
+import { useRouter } from "next/navigation";
 
 export default function InventoryPage() {
+  const router = useRouter();
   const [rows, setRows] = useState([]);
   const [openAddProduct, setOpenAddProduct] = useState(false);
   const [openAddVariant, setOpenAddVariant] = useState(false);
+
+  // only allow acces to ADMIN
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    const user = stored ? JSON.parse(stored) : null;
+
+    if (!user || user.adminRole !== true) {
+      // Redirect non-admins
+      router.replace("/"); 
+    }
+  }, [router]);
 
   const handleAddNewProduct = async (productData) => {
     try {

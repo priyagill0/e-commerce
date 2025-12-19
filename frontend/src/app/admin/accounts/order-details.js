@@ -165,6 +165,17 @@ export default function AdminOrderDetails({ params }) {
     }
   };
 
+    // only allow acces to ADMIN
+    useEffect(() => {
+        const stored = localStorage.getItem("user");
+        const user = stored ? JSON.parse(stored) : null;
+    
+        if (!user || user.adminRole !== true) {
+          // Redirect non-admins
+          router.replace("/"); 
+        }
+      }, [router]);
+
   if (loading) {
     return (
       <div style={{ marginTop: "5rem", textAlign: "center" }}>

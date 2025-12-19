@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Button from '@mui/material/Button';
 
 export default function Login() {
     const [form, setForm] = useState({
@@ -42,7 +43,8 @@ export default function Login() {
             firstName: user.firstName,
             lastName: user.lastName,
             address: user.address,
-            payment: user.payment
+            payment: user.payment,
+            adminRole: user.adminRole
         }));
 
         if (redirect === "checkout") {
@@ -57,10 +59,33 @@ export default function Login() {
             <h1 style={{marginBottom: 20}}>Login</h1>
             <input className="full border p-3 rounded mb-3" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
             <input type="password" className="full border p-3 rounded mb-3" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
-            <button className="bg-gray-800 text-white p-3 rounded hover:bg-black" onClick={handleLogin}>Login</button>
+
+            <Button 
+                variant="contained"  // gives a filled blue button
+                color="primary"
+                onClick={handleLogin}
+                sx={{ textTransform: "none"}}
+                >
+                Login
+            </Button>           
             <p style={{color:"red"}}>{message}</p>
             <p style={{marginTop: 20}}>or</p> 
-            <Link href={`/signup?redirect=${redirect || ""}`}><button className="w-full mt-5 border border-gray-800 text-gray-900 p-3 rounded hover:bg-gray-100">Create an Account</button></Link>
+            <Link href={`/signup?redirect=${redirect || ""}`} passHref>
+            <Button variant="contained" fullWidth
+                sx={{
+                mt: 2,
+                backgroundColor: '#ffffff',       // white by default
+                color: '#1976d2',                 // blue text
+                border: '1px solid #1976d2',     // optional blue border
+                '&:hover': {
+                    backgroundColor: '#e3f2fd',    // light blue on hover
+                },
+                textTransform: "none"
+                }}
+            >
+                Create an Account
+            </Button>
+            </Link>
         </div>
     );
 }
