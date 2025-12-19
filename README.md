@@ -8,7 +8,7 @@
 - npm (comes with Node.js)  
 - Java 17+ 
 - Maven (for building the Spring Boot backend)
-- PostgreSQL and PGAdmin (optional) for database.
+- MySQL Workbench
 
 ### Install Maven:
 Execute in terminal:
@@ -31,4 +31,5 @@ Execute in terminal:
 ### Database Setup (MySQL):
 - The project uses MySQL as its database.
 - The backend code is already integrated with the database using environment variables in `resources/application.properties`.
-- You can run the database locally and populate it using this command:` mysql -u root -p ecommerce < backend/src/main/resources/e-commerce.sql` .
+- The database is populated upon running the backend, through the DataSeeder file.
+
