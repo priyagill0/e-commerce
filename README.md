@@ -33,3 +33,7 @@ Execute in terminal:
 - The backend code is already integrated with the database using environment variables in `resources/application.properties`.
 - The database is populated upon running the backend, through the DataSeeder file.
 
+### To test user accounts, you may use the following credentials:
+- Admin is Admin@gmail.com password: Admin
+- A sample customer account is bellahadid@gmail.com password: password123 
+
