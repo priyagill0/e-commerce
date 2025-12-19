@@ -49,7 +49,7 @@ export default function Account() {
         console.log("Payload being sent:", payload); // Debug JSON
 
         try {
-            const res = await fetch(`http://localhost:8080/api/customers/${user.userId}`, {
+            const res = await fetch(`http://localhost:8080/api/customers/${user.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
