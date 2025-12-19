@@ -28,6 +28,34 @@ export default function Header() {
         }
     }, []);
 
+    const [userName, setUserName] = useState("");
+
+    // Check log in status + user name
+    useEffect(() => {
+        const loadUser = () => {
+            const stored = localStorage.getItem("user");
+            if (!stored) {
+                setIsLoggedIn(false);
+                setUserName("");
+                return;
+            }
+
+            const userObj = JSON.parse(stored);
+            setIsLoggedIn(true);
+
+            // Use firstName if stored, fallback to email prefix
+            const display =
+                userObj.firstName ||
+                (userObj.email ? userObj.email.split("@")[0] : "");
+
+            setUserName(display);
+        };
+
+        loadUser();
+        window.addEventListener("storage", loadUser);
+        return () => window.removeEventListener("storage", loadUser);
+    }, []);
+
         
   const goToCart = () => {
     router.push("/cart"); // navigate to cart page
@@ -93,19 +121,25 @@ export default function Header() {
                 </Menu>
                 </div>
 
+                {/* USER ICON + NAME */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <IconButton onClick={handleUserClick}>
+                        <AccountCircleIcon fontSize="large" />
+                    </IconButton>
 
-                {/* USER ICON */}
-                <IconButton onClick={handleUserClick}>
-                    <AccountCircleIcon fontSize="large" />
-                </IconButton>
+                    {isLoggedIn && (
+                        <span style={{ fontSize: "0.75rem", marginTop: "-6px" }}>
+                            {userName}
+                        </span>
+                    )}
+                </div>
 
                 {/* DROPDOWN MENU */}
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
                     {/* LOGGED IN MENU */} 
 
                     {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/account");}}>My Account</MenuItem>}
-
-                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Order History</MenuItem>}
+                    {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/orders");}}>Past Orders</MenuItem>}
                     {isLoggedIn && <MenuItem onClick={() => {closeMenu(); router.push("/logout");}}>Logout</MenuItem>}
                   
                
