@@ -42,4 +42,10 @@ public class OrderController {
     public Order add(@RequestBody Order order) {
         return service.addOrder(order);
     }
+
+    @GetMapping("/user/{userId}")
+    public List<Order> getByUserId(@PathVariable String userId) {
+        return service.getOrdersByUserId(userId);
+    }
+
 }

@@ -8,4 +8,5 @@ import com.example.backend.model.Order;
 
 public interface OrderRepository  extends JpaRepository<Order, String> {
     List<Order> findByOrderId(String orderId);
+    List<Order> findByCustomer_UserId(String userId);
 }
