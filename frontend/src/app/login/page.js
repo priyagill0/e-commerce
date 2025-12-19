@@ -41,7 +41,8 @@ export default function Login() {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            address: user.address
+            address: user.address,
+            payment: user.payment
         }));
 
         if (redirect === "checkout") {

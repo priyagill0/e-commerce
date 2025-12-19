@@ -40,6 +40,8 @@ public class CustomerService {
         exists.setLastName(updated.getLastName());
         exists.setEmail(updated.getEmail());
         exists.setAddress(updated.getAddress());
+        exists.setPassword(updated.getPassword());
+        exists.setPayment(updated.getPayment());
 
         return repo.save(exists);
     }

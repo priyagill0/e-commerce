@@ -21,7 +21,6 @@ export default function Signup() {
             name: "",
             expiryDate: "",
             cvc: ""
-           
         }
     });
     const [message, setMessage] = useState("");

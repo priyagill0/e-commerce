@@ -75,4 +75,8 @@ public class OrderService {
     }
     
 
+    public List<Order> getOrdersByUserId(String userId){
+        return repo.findByCustomer_UserId(userId);
+    }
+
 }
