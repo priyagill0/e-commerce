@@ -12,6 +12,7 @@ If the Docker code is not working optimally, please try running locally using ou
 - Maven (for building the Spring Boot backend)
 - MySQL Server: version 8
 - MySQL Workbench
+- Docker & Docker Compose (for containerized setup)
 
 ### Install Maven:
 Execute in terminal:
@@ -20,10 +21,11 @@ Execute in terminal:
 - Sdk install maven 
 
 ## Run With Docker Setup:
-1) Begin by cloning GitHub repo: https://github.com/priyagill0/e-commerce/tree/docker-deployment 
+1) Please ensure that no other applications are running on ports **3000**, **8080**, and **3306** before starting the application.
+2) Begin by cloning GitHub repo: https://github.com/priyagill0/e-commerce/tree/docker-deployment 
 **(docker-deployment branch)**
 
-2) Please execute the following command in the project root folder 
+3) Please execute the following command in the project root folder 
 (it covers everything):
 - `docker-compose up`
   
@@ -63,10 +65,11 @@ Frontend Setup:
 Database Setup (MySQL):
 - The project uses MySQL as its database.
 - The backend code is already integrated with the database using environment variables in `resources/application.properties`.
+- Create a schema named `ecommerce` using MySQL Workbench.
 - The database is populated upon running the backend, through the DataSeeder file.
 
 ### To test user accounts, you may use the following credentials:
 - Admin → email: Admin@gmail.com       password: Admin
-- A sample customer account → email: bellahadid@gmail.com        password: password123 
-
-
+- A sample customer account → email: bellahadid@gmail.com        password: password123
+  
+**Please note:** On the order checkout page, a valid credit card number must contain exactly **16 digits**. If an invalid card number is entered, the order will not be processed.
