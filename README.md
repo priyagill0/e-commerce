@@ -72,4 +72,7 @@ Database Setup (MySQL):
 - Admin → email: Admin@gmail.com       password: Admin
 - A sample customer account → email: bellahadid@gmail.com        password: password123
   
+### API Documentation
+Our Spring Boot backend exposes multiple REST API endpoints. All available endpoints are documented using Swagger and can be accessed at http://localhost:8080/swagger-ui/index.html
+
 **Please note:** On the order checkout page, a valid credit card number must contain exactly **16 digits**. If an invalid card number is entered, the order will not be processed.

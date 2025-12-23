@@ -27,20 +27,12 @@ const deleteCartItem = async (itemId) => {
         credentials: "include",
       }
     );
-    // const text = await res.text();
-    // const data = text ? JSON.parse(text) : { items: [] };
-    // Instead of parsing text, fetch updated cart directly
-    // const updatedCart = await fetchCart(); // make sure fetchCart returns the cart object
-    // setCart(updatedCart);
+ 
     if (!res.ok) {
       console.error("Failed to delete cart item");
       return;
     }
     await fetchCart(); // updates context and cart safely
-
-    // console.log("Updated Cart Object after deletion:", data);
-    // setCart(data);
-    // fetchCart();
   }
   catch (err) {
     console.error("Error deleting item from cart:", err);
